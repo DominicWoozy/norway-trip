@@ -34,9 +34,9 @@ const souvenirs = [
   '挪威羊毛衫、羊毛袜或 Marius 图案',
   '正品 Sámi Duodji 手工艺品',
   '挪威奶酪刨与北欧设计小物',
-  'Freia 巧克力、云莓果酱',
-  '密封包装的咖啡与海盐',
-  '棕色奶酪需先确认入境规定',
+  '商业密封的云莓果酱',
+  '不含乳、肉、蛋的巧克力或糖果',
+  '原厂密封的烘焙咖啡与海盐',
 ]
 
 export function NotesSection() {
@@ -77,7 +77,12 @@ export function NotesSection() {
             <div>{souvenirs.map((item) => <span key={item}>{item}</span>)}</div>
           </article>
         </div>
-        <small className="prep-note">食品类请保留原包装与购物凭证，并在购买前确认中国海关最新入境规定。</small>
+        <small className="prep-note">
+          不建议携带棕色奶酪、黄油、肉制品及水产制品；食品请保留原包装与购物凭证，并遵守合理自用数量。
+          <a href="https://www.moa.gov.cn/nybgb/2022/202202/202203/t20220324_6393815.htm" target="_blank" rel="noreferrer">
+            查看海关禁限名录
+          </a>
+        </small>
       </div>
     </section>
   )

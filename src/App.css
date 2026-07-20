@@ -360,6 +360,7 @@
 .prep-card > div:last-child { display: flex; flex-wrap: wrap; gap: 6px; }
 .prep-card > div:last-child span { padding: 5px 7px; color: #46534f; border: 1px solid rgba(12,29,29,.12); font-size: 7px; line-height: 1.35; }
 .prep-note { display: block; margin-top: 9px; color: var(--muted); font-size: 7px; line-height: 1.6; }
+.prep-note a { margin-left: 6px; color: var(--orange); text-underline-offset: 2px; }
 
 footer { min-height: 125px; padding: 0 clamp(24px, 7vw, 108px); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 30px; color: rgba(246,241,228,.48); background: #061818; font-size: 8px; }
 footer .brand { color: var(--paper); }
