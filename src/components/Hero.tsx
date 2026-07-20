@@ -1,6 +1,7 @@
 import { ArrowDown, Compass, Plane } from 'lucide-react'
 import type { CSSProperties } from 'react'
 import { assetUrl } from '../assets'
+import { TripCountdown } from './TripCountdown'
 
 export function Hero() {
   return (
@@ -21,10 +22,13 @@ export function Hero() {
           <p>滚动页面，跟随汽车、飞机与沿海邮轮完成整段旅程。</p>
         </div>
       </div>
-      <a href="#journey" className="hero-scroll">
-        <span>开始旅程</span>
-        <ArrowDown size={18} />
-      </a>
+      <div className="hero-footer">
+        <TripCountdown />
+        <a href="#journey" className="hero-scroll">
+          <span>开始旅程</span>
+          <ArrowDown size={18} />
+        </a>
+      </div>
       <div className="hero-orbit" aria-hidden="true" />
     </section>
   )
