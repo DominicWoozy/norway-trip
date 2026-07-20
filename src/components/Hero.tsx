@@ -1,8 +1,14 @@
 import { ArrowDown, Compass, Plane } from 'lucide-react'
+import type { CSSProperties } from 'react'
+import { assetUrl } from '../assets'
 
 export function Hero() {
   return (
-    <section className="hero-section" id="top">
+    <section
+      className="hero-section"
+      id="top"
+      style={{ '--hero-image': `url("${assetUrl('lofoten.jpg')}")` } as CSSProperties}
+    >
       <div className="hero-topline">
         <span><Compass size={15} /> 59°N — 70°N</span>
         <span>SEPTEMBER — OCTOBER 2026</span>

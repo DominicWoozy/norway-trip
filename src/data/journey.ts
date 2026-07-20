@@ -1,5 +1,6 @@
 import { travelLegs, tripDays, type TripDay } from '../itinerary'
 import { greatCircle, type Coordinate } from '../geo/routeMath'
+import { assetUrl } from '../assets'
 
 export type TransportMode = 'car' | 'plane' | 'ship' | 'stay'
 
@@ -67,7 +68,7 @@ export const journeyChapters: JourneyChapter[] = [
   {
     id: 'arrival-stavanger',
     day: tripDays[0],
-    image: '/pulpit-rock.jpg',
+    image: assetUrl('pulpit-rock.jpg'),
     eyebrow: 'PEK · VIE · OSL · SVG',
     summary: '跨越欧亚大陆，经维也纳与奥斯陆转机，在夜色中抵达峡湾之门。',
     cameraZoom: 2.25,
@@ -81,7 +82,7 @@ export const journeyChapters: JourneyChapter[] = [
   {
     id: 'pulpit-rock',
     day: tripDays[1],
-    image: '/guide/preikestolen.jpg',
+    image: assetUrl('guide/preikestolen.jpg'),
     eyebrow: 'RYFYLKE · LYSEFJORD',
     summary: '穿过 Ryfast 海底隧道，沿 Ryfylke 前往布道石，在吕瑟峡湾之上完成经典徒步。',
     cameraZoom: 5.75,
@@ -94,7 +95,7 @@ export const journeyChapters: JourneyChapter[] = [
   {
     id: 'fly-lofoten',
     day: tripDays[2],
-    image: '/guide/reine-norway.jpg',
+    image: assetUrl('guide/reine-norway.jpg'),
     eyebrow: 'OSL · BOO · LKN',
     summary: '从首都飞向北极圈，经博德换乘支线航班，在莱克内斯降落后进入罗弗敦群岛。',
     cameraZoom: 3.45,
@@ -107,7 +108,7 @@ export const journeyChapters: JourneyChapter[] = [
   {
     id: 'lofoten-west',
     day: tripDays[3],
-    image: '/guide/haukland-beach-norway.jpg',
+    image: assetUrl('guide/haukland-beach-norway.jpg'),
     eyebrow: 'E10 · WEST LOFOTEN',
     summary: '沿国家景观公路穿过渔村、白沙滩与锯齿山峰，把时间留给沿途每一次停车。',
     cameraZoom: 5.85,
@@ -116,7 +117,7 @@ export const journeyChapters: JourneyChapter[] = [
   {
     id: 'lofoten-east',
     day: tripDays[4],
-    image: '/guide/henningsv-r.jpg',
+    image: assetUrl('guide/henningsv-r.jpg'),
     eyebrow: 'HENNINGSVÆR · SVOLVÆR',
     summary: '继续向斯沃尔维尔方向行驶，经过海岛桥梁和渔港，等待北方最好的光。',
     cameraZoom: 5.85,
@@ -125,7 +126,7 @@ export const journeyChapters: JourneyChapter[] = [
   {
     id: 'coastal-night',
     day: tripDays[5],
-    image: '/lofoten.jpg',
+    image: assetUrl('lofoten.jpg'),
     eyebrow: 'SVOLVÆR · VESTERÅLEN',
     summary: '夜晚从斯沃尔维尔登上沿海邮轮，经过斯托克马克内斯、索特兰与里瑟港。',
     cameraZoom: 5.15,
@@ -134,7 +135,7 @@ export const journeyChapters: JourneyChapter[] = [
   {
     id: 'coastal-morning',
     day: tripDays[6],
-    image: '/tromso-aurora.jpg',
+    image: assetUrl('tromso-aurora.jpg'),
     eyebrow: 'HARSTAD · FINNSNES · TROMSØ',
     summary: '清晨经过 Trondenes 与 Senja 东岸，沿 Malangen 峡湾驶入北极之都。',
     cameraZoom: 5.25,
@@ -143,7 +144,7 @@ export const journeyChapters: JourneyChapter[] = [
   {
     id: 'tromso-city',
     day: tripDays[7],
-    image: '/guide/arctic-cathedral.jpg',
+    image: assetUrl('guide/arctic-cathedral.jpg'),
     eyebrow: 'THE ARCTIC CAPITAL',
     summary: '北极大教堂、城市街区与山顶视角，入夜后把目光交给极光。',
     cameraZoom: 5.7,
@@ -152,7 +153,7 @@ export const journeyChapters: JourneyChapter[] = [
   {
     id: 'tromso-nature',
     day: tripDays[8],
-    image: '/guide/reindeer-norway.jpg',
+    image: assetUrl('guide/reindeer-norway.jpg'),
     eyebrow: 'WHALES · FJORDS · AURORA',
     summary: '根据天气选择观鲸、海钓、Senja 或驯鹿体验，连续第三晚追逐极光。',
     cameraZoom: 5.55,
@@ -161,7 +162,7 @@ export const journeyChapters: JourneyChapter[] = [
   {
     id: 'return-oslo',
     day: tripDays[9],
-    image: '/oslo-opera.jpg',
+    image: assetUrl('oslo-opera.jpg'),
     eyebrow: 'TOS · OSL',
     summary: '从北极圈飞回奥斯陆，在返程前用攀岩、购物和城市漫步收尾。',
     cameraZoom: 3.45,
@@ -174,7 +175,7 @@ export const journeyChapters: JourneyChapter[] = [
   {
     id: 'homebound',
     day: tripDays[10],
-    image: '/oslo-opera.jpg',
+    image: assetUrl('oslo-opera.jpg'),
     eyebrow: 'OSL · MUC · PEK',
     summary: '从奥斯陆经慕尼黑返回北京，十一天的北境旅程在跨越大陆的航线上结束。',
     cameraZoom: 2.2,
@@ -192,7 +193,7 @@ export const journeyPois: JourneyPoi[] = [
     kind: 'scenic',
     city: '斯塔万格',
     coordinates: [6.1904, 58.9864],
-    image: '/guide/preikestolen.jpg',
+    image: assetUrl('guide/preikestolen.jpg'),
     description: '悬于吕瑟峡湾上方 604 米的经典徒步目的地。',
   },
   {
@@ -200,7 +201,7 @@ export const journeyPois: JourneyPoi[] = [
     kind: 'sight',
     city: '斯塔万格',
     coordinates: [5.7248, 58.9723],
-    image: '/guide/gamle-stavanger.jpg',
+    image: assetUrl('guide/gamle-stavanger.jpg'),
     description: '保存完好的白色木屋街区。',
   },
   {
@@ -208,7 +209,7 @@ export const journeyPois: JourneyPoi[] = [
     kind: 'scenic',
     city: '罗弗敦',
     coordinates: [13.0888, 67.9324],
-    image: '/guide/reine-norway.jpg',
+    image: assetUrl('guide/reine-norway.jpg'),
     description: '俯瞰 Reine 渔村和群山的经典公路视角。',
   },
   {
@@ -216,7 +217,7 @@ export const journeyPois: JourneyPoi[] = [
     kind: 'scenic',
     city: '罗弗敦',
     coordinates: [13.545, 68.1993],
-    image: '/guide/haukland-beach-norway.jpg',
+    image: assetUrl('guide/haukland-beach-norway.jpg'),
     description: '被群山环抱的北极白沙滩。',
   },
   {
@@ -224,7 +225,7 @@ export const journeyPois: JourneyPoi[] = [
     kind: 'sight',
     city: '罗弗敦',
     coordinates: [14.2017, 68.1537],
-    image: '/guide/henningsv-r.jpg',
+    image: assetUrl('guide/henningsv-r.jpg'),
     description: '散落在海岛上的艺术渔村。',
   },
   {
@@ -232,7 +233,7 @@ export const journeyPois: JourneyPoi[] = [
     kind: 'sight',
     city: '特罗姆瑟',
     coordinates: [18.9872, 69.6487],
-    image: '/guide/arctic-cathedral.jpg',
+    image: assetUrl('guide/arctic-cathedral.jpg'),
     description: '以冰山为灵感的北极城市地标。',
   },
   {
@@ -240,7 +241,7 @@ export const journeyPois: JourneyPoi[] = [
     kind: 'scenic',
     city: '特罗姆瑟',
     coordinates: [18.9927, 69.6427],
-    image: '/guide/fjellheisen.jpg',
+    image: assetUrl('guide/fjellheisen.jpg'),
     description: '俯瞰城市、峡湾与群山的山顶视角。',
   },
   {
@@ -248,7 +249,7 @@ export const journeyPois: JourneyPoi[] = [
     kind: 'food',
     city: '特罗姆瑟',
     coordinates: [18.9519, 69.6492],
-    image: '/guide/reindeer-norway.jpg',
+    image: assetUrl('guide/reindeer-norway.jpg'),
     description: '以北挪威食材为特色的人气小酒馆。',
   },
   {
@@ -256,7 +257,7 @@ export const journeyPois: JourneyPoi[] = [
     kind: 'sight',
     city: '奥斯陆',
     coordinates: [10.753, 59.9075],
-    image: '/oslo-opera.jpg',
+    image: assetUrl('oslo-opera.jpg'),
     description: '可步行登上屋顶的港湾地标。',
   },
   {
@@ -264,7 +265,7 @@ export const journeyPois: JourneyPoi[] = [
     kind: 'sight',
     city: '奥斯陆',
     coordinates: [10.7002, 59.927],
-    image: '/guide/frogner-park.jpg',
+    image: assetUrl('guide/frogner-park.jpg'),
     description: '拥有两百余件雕塑的开放式公园。',
   },
 ]

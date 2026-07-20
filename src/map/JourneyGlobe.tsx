@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import maplibregl, {
   type GeoJSONSource,
   type Map as MapLibreMap,
@@ -9,6 +9,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import { journeyChapters, journeyPois, type JourneyPoi, type TransportMode } from '../data/journey'
 import { haversineDistance, samplePath, type Coordinate } from '../geo/routeMath'
 import { Vehicle3DLayer } from './Vehicle3DLayer'
+import { assetUrl } from '../assets'
 
 type JourneyGlobeProps = {
   activeChapter: number
@@ -473,7 +474,10 @@ export function JourneyGlobe({
   }, [mapReady, overviewActive, selectedPoi])
 
   return (
-    <div className="journey-map-shell">
+    <div
+      className="journey-map-shell"
+      style={{ '--fallback-image': `url("${assetUrl('lofoten.jpg')}")` } as CSSProperties}
+    >
       <div ref={containerRef} className="journey-map" />
       {mapError && (
         <div className="map-fallback">

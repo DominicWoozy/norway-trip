@@ -32,7 +32,7 @@
   background:
     radial-gradient(circle at 74% 42%, rgba(61,111,104,.18), transparent 30%),
     linear-gradient(90deg, rgba(7,25,25,.96), rgba(7,25,25,.68) 56%, rgba(7,25,25,.8)),
-    url('/lofoten.jpg') center 45% / cover;
+    var(--hero-image) center 45% / cover;
   position: relative;
   overflow: hidden;
 }
@@ -90,7 +90,7 @@
   color: var(--paper);
   background:
     linear-gradient(rgba(4,20,20,.76), rgba(4,20,20,.9)),
-    url('/lofoten.jpg') center / cover;
+    var(--fallback-image) center / cover;
 }
 .map-fallback strong { font: 500 28px var(--serif); }
 .map-fallback span { color: rgba(246,241,228,.55); font-size: 10px; }

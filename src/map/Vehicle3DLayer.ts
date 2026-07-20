@@ -7,6 +7,7 @@ import type {
 } from 'maplibre-gl'
 import type { Coordinate } from '../geo/routeMath'
 import type { TransportMode } from '../data/journey'
+import { assetUrl } from '../assets'
 
 export type VehicleRenderState = {
   position: Coordinate
@@ -18,9 +19,9 @@ export type VehicleRenderState = {
 type MovingMode = Exclude<TransportMode, 'stay'>
 
 const modelUrls: Record<MovingMode, string> = {
-  car: '/models/car.glb',
-  plane: '/models/plane.glb',
-  ship: '/models/ship.glb',
+  car: assetUrl('models/car.glb'),
+  plane: assetUrl('models/plane.glb'),
+  ship: assetUrl('models/ship.glb'),
 }
 
 const orange = new THREE.MeshStandardMaterial({ color: 0xec5b36, roughness: 0.62 })
