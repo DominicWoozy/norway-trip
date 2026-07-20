@@ -1,4 +1,4 @@
-import { CalendarClock, CloudSun, Sparkles } from 'lucide-react'
+import { CalendarClock, CloudSun, Gift, Shirt, Sparkles } from 'lucide-react'
 
 const notes = [
   {
@@ -21,6 +21,24 @@ const notes = [
   },
 ]
 
+const clothing = [
+  '美利奴羊毛或速干贴身层',
+  '抓绒 / 羊毛衫 / 轻薄羽绒',
+  '防风防水硬壳与防水裤',
+  '防水徒步鞋、羊毛袜',
+  '帽子、手套、围巾或 Buff',
+  '头灯与背包防雨罩',
+]
+
+const souvenirs = [
+  '挪威羊毛衫、羊毛袜或 Marius 图案',
+  '正品 Sámi Duodji 手工艺品',
+  '挪威奶酪刨与北欧设计小物',
+  'Freia 巧克力、云莓果酱',
+  '密封包装的咖啡与海盐',
+  '棕色奶酪需先确认入境规定',
+]
+
 export function NotesSection() {
   return (
     <section className="notes-section" id="notes">
@@ -28,15 +46,38 @@ export function NotesSection() {
         <span>03 / BEFORE DEPARTURE</span>
         <h2>给意外的风景，<br />留一点空间</h2>
       </div>
-      <div className="notes-grid">
-        {notes.map(({ icon: Icon, label, title, copy }) => (
-          <article key={label}>
-            <Icon size={23} />
-            <span>{label}</span>
-            <h3>{title}</h3>
-            <p>{copy}</p>
+      <div className="notes-content">
+        <div className="notes-grid">
+          {notes.map(({ icon: Icon, label, title, copy }) => (
+            <article key={label}>
+              <Icon size={23} />
+              <span>{label}</span>
+              <h3>{title}</h3>
+              <p>{copy}</p>
+            </article>
+          ))}
+        </div>
+
+        <div className="prep-grid">
+          <article className="prep-card">
+            <div className="prep-heading">
+              <Shirt size={19} />
+              <div><span>WHAT TO WEAR</span><h3>分层穿衣</h3></div>
+            </div>
+            <p>9 月底至 10 月初约 2–13°C，海边风雨会让体感更低。</p>
+            <div>{clothing.map((item) => <span key={item}>{item}</span>)}</div>
           </article>
-        ))}
+
+          <article className="prep-card">
+            <div className="prep-heading">
+              <Gift size={19} />
+              <div><span>BRING IT HOME</span><h3>纪念品与特产</h3></div>
+            </div>
+            <p>优先选择耐运输、有产地或品牌标识的商品。</p>
+            <div>{souvenirs.map((item) => <span key={item}>{item}</span>)}</div>
+          </article>
+        </div>
+        <small className="prep-note">食品类请保留原包装与购物凭证，并在购买前确认中国海关最新入境规定。</small>
       </div>
     </section>
   )
