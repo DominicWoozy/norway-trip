@@ -31,12 +31,12 @@ const clothing = [
 ]
 
 const souvenirs = [
-  '挪威羊毛衫、羊毛袜或 Marius 图案',
-  '正品 Sámi Duodji 手工艺品',
-  '挪威奶酪刨与北欧设计小物',
-  '商业密封的云莓果酱',
-  '不含乳、肉、蛋的巧克力或糖果',
-  '原厂密封的烘焙咖啡与海盐',
+  '羊毛制品：Dale of Norway / Devold / Rauma',
+  '萨米手工艺：认准 Sámi Duodji 认证标识',
+  '奶酪刨：Bjørklund1925',
+  '云莓果酱：Lerum Heimefrå / Nora',
+  '巧克力糖果：Freia / Nidar',
+  '咖啡与海盐：Tim Wendelboe / Solberg & Hansen / Arctic Salt',
 ]
 
 export function NotesSection() {
