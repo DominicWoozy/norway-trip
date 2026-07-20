@@ -31,7 +31,7 @@ export function JourneyOverview({ selectedDay, onSelectDay, onSelectPoi }: Journ
   const renderGuideButton = (name: string, kind: 'sight' | 'food') => {
     const poi = findPoi(name)
     return (
-      <button key={name} onClick={() => poi && onSelectPoi(poi)} disabled={!poi}>
+      <button type="button" key={name} onClick={() => poi && onSelectPoi(poi)} disabled={!poi}>
         <span>{name}</span>
         {poi && <MapPin size={11} />}
         {!poi && <small>{kind === 'food' ? '当地风味' : '推荐地点'}</small>}
@@ -52,6 +52,7 @@ export function JourneyOverview({ selectedDay, onSelectDay, onSelectPoi }: Journ
       <div className="overview-days" aria-label="选择行程日期">
         {journeyChapters.map(({ day }, index) => (
           <button
+            type="button"
             key={day.id}
             className={selectedDay === index ? 'active' : ''}
             onClick={() => onSelectDay(index)}

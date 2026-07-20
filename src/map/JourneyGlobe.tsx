@@ -450,6 +450,8 @@ export function JourneyGlobe({
     const map = mapRef.current
     if (!mapReady || !map || !overviewActive || !selectedPoi) return
     popupRef.current?.remove()
+    map.stop()
+    const pageScrollTop = window.scrollY
 
     const content = document.createElement('div')
     content.className = 'journey-popup'
@@ -466,11 +468,27 @@ export function JourneyGlobe({
     copy.append(label, title, description)
     content.append(image, copy)
 
-    popupRef.current = new maplibregl.Popup({ offset: 22, maxWidth: '280px', className: 'journey-map-popup' })
+    popupRef.current = new maplibregl.Popup({
+      offset: 22,
+      maxWidth: '280px',
+      className: 'journey-map-popup',
+      closeOnMove: false,
+      focusAfterOpen: false,
+    })
       .setLngLat(selectedPoi.coordinates)
       .setDOMContent(content)
       .addTo(map)
-    map.flyTo({ center: selectedPoi.coordinates, zoom: 12.5, pitch: 28, duration: 850 })
+    map.easeTo({
+      center: selectedPoi.coordinates,
+      zoom: 10.8,
+      pitch: 20,
+      bearing: 0,
+      duration: 550,
+      essential: true,
+    })
+    requestAnimationFrame(() => {
+      if (Math.abs(window.scrollY - pageScrollTop) > 1) window.scrollTo(0, pageScrollTop)
+    })
   }, [mapReady, overviewActive, selectedPoi])
 
   return (
