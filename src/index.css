@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap');
+
+:root {
+  --ink: #0c1d1d;
+  --paper: #f6f1e4;
+  --sand: #e9e1d1;
+  --orange: #ec5b36;
+  --muted: #65706c;
+  --sans: 'Noto Sans SC', 'PingFang SC', system-ui, sans-serif;
+  --serif: 'Noto Serif SC', 'Songti SC', Georgia, serif;
+  --mono: 'DM Mono', ui-monospace, monospace;
+  color: var(--ink);
+  background: var(--paper);
+  font-family: var(--sans);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; min-width: 320px; min-height: 100vh; }
+button, input, textarea { font: inherit; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+em { font-style: normal; }
+::selection { color: white; background: var(--orange); }
+#root { min-height: 100vh; }
