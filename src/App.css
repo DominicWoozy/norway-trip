@@ -344,14 +344,20 @@ footer small a { color: inherit; }
 }
 
 @media (max-width: 720px) {
-  .site-header { height: 62px; padding-inline: 18px; }
+  .site-header {
+    height: calc(60px + env(safe-area-inset-top));
+    padding: env(safe-area-inset-top) 16px 0;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .site-header .brand { min-width: 0; font-size: 12px; }
+  .site-header .brand > span { width: 29px; height: 29px; }
   .site-header > button { display: grid; place-items: center; padding: 7px; }
   .site-header nav {
     position: absolute;
-    top: 62px;
+    top: calc(60px + env(safe-area-inset-top));
     left: 0;
     right: 0;
-    padding: 22px;
+    padding: 22px 20px 26px;
     display: none;
     flex-direction: column;
     gap: 19px;
@@ -359,46 +365,111 @@ footer small a { color: inherit; }
     border-top: 1px solid rgba(246,241,228,.1);
   }
   .site-header nav.open { display: flex; }
-  .hero-section { padding: 90px 22px 34px; }
+  .hero-section {
+    min-height: 100dvh;
+    padding: calc(84px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom));
+  }
   .hero-topline span:last-child { display: none; }
-  .hero-content h1 { font-size: clamp(60px, 20vw, 88px); }
+  .hero-content h1 { font-size: clamp(54px, 18vw, 78px); line-height: .9; }
+  .hero-content > p { margin-bottom: 12px; font-size: 8px; }
   .hero-intro { flex-wrap: wrap; }
-  .hero-intro p { width: 100%; margin: 13px 0 0; }
+  .hero-intro > i { flex: 1; min-width: 18px; }
+  .hero-intro p { width: 100%; margin: 10px 0 0; line-height: 1.6; }
   .hero-scroll { align-self: flex-start; }
 
-  .journey-narrative { min-height: 1320vh; }
-  .journey-stage { height: 100svh; }
-  .journey-map-shell::after { background: linear-gradient(0deg, rgba(4,20,20,.84), transparent 55%); }
-  .globe-hud { left: 18px; bottom: 21px; }
+  .journey-narrative { min-height: 1320dvh; }
+  .journey-stage { height: 100dvh; }
+  .journey-map-shell::after {
+    background:
+      linear-gradient(180deg, rgba(4,20,20,.35), transparent 22%),
+      linear-gradient(0deg, rgba(4,20,20,.88), transparent 52%);
+  }
+  .globe-hud {
+    top: calc(72px + env(safe-area-inset-top));
+    bottom: auto;
+    left: 15px;
+    padding: 8px 10px;
+    border: 1px solid rgba(246,241,228,.12);
+    background: rgba(6,24,24,.65);
+    backdrop-filter: blur(8px);
+  }
+  .mode-dot { width: 27px; height: 27px; }
+  .mode-dot::before { inset: 7px; }
+  .globe-hud strong { max-width: 210px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 9px; }
   .globe-coordinate { display: none; }
-  .story-progress { right: 9px; }
+  .story-progress { top: 20%; right: 7px; height: 58%; }
   .scroll-chapter {
-    min-height: 110svh;
-    padding: 48vh 16px 5vh;
+    min-height: 108dvh;
+    padding: 46dvh 12px calc(22px + env(safe-area-inset-bottom));
     align-items: flex-end;
     justify-content: center !important;
   }
-  .chapter-card { width: 100%; max-height: 49svh; }
-  .chapter-image { height: 116px; }
-  .chapter-body { padding: 18px 20px 20px; }
-  .chapter-body h2 { font-size: 25px; }
+  .chapter-card {
+    width: 100%;
+    max-height: none;
+    overflow: hidden;
+    border: 1px solid rgba(246,241,228,.28);
+  }
+  .chapter-image { height: 92px; }
+  .chapter-image > span { left: 16px; bottom: 12px; font-size: 6px; }
+  .chapter-body { padding: 15px 17px 17px; }
+  .chapter-meta { font-size: 7px; }
+  .chapter-place { margin-top: 13px; }
+  .chapter-body h2 { margin-top: 6px; font-size: 23px; }
+  .chapter-summary {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
+  .chapter-legs { max-height: 67px; margin-top: 12px; padding: 9px 0; overflow: hidden; gap: 6px; }
+  .chapter-legs > div { font-size: 8px; }
   .chapter-plan { display: none; }
-  .overview-step { min-height: 120svh; padding: 15vh 14px 4vh; align-items: flex-end; }
-  .overview-panel { width: 100%; max-height: 63svh; padding: 20px; }
-  .overview-heading h2 { font-size: 25px; }
-  .overview-guide { gap: 12px; }
+  .chapter-stay { padding-top: 9px; font-size: 8px; }
+  .overview-step {
+    min-height: 138dvh;
+    padding: 38dvh 12px calc(24px + env(safe-area-inset-bottom));
+    align-items: flex-end;
+  }
+  .overview-panel { width: 100%; max-height: none; padding: 18px; overflow: visible; }
+  .overview-heading h2 { font-size: 23px; }
+  .overview-days { margin-top: 17px; margin-inline: -18px; padding-inline: 18px; scroll-snap-type: x proximity; }
+  .overview-days button { min-width: 62px; scroll-snap-align: start; }
+  .overview-detail { margin-top: 12px; padding: 13px 0; }
+  .overview-detail h3 { font-size: 21px; }
+  .overview-guide { padding-top: 13px; gap: 12px; }
+  .overview-guide button { min-height: 28px; }
+  .overview-hint { margin-top: 11px; }
 
-  .booking-section, .notes-section { padding: 75px 22px; }
+  .booking-section, .notes-section { padding: 68px 18px; }
   .section-title { grid-template-columns: 1fr; gap: 22px; }
+  .section-title h2 { font-size: 37px; }
   .section-title p { justify-self: start; }
-  .booking-grid { grid-template-columns: 1fr; }
-  .booking-grid a { min-height: 180px; }
+  .booking-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .booking-grid a { min-height: 145px; padding: 16px; }
+  .booking-grid h3 { margin-top: 30px; font-size: 18px; }
+  .booking-grid p { font-size: 8px; line-height: 1.45; }
   .notes-grid { grid-template-columns: 1fr; }
-  .notes-grid article { min-height: 230px; }
+  .notes-grid article { min-height: 190px; padding: 22px; }
+  .notes-grid svg { margin-bottom: 30px; }
   .notes-grid article + article { border-left: 1px solid rgba(12,29,29,.14); border-top: 0; }
   .notes-grid article:first-child { margin-top: 0; }
-  footer { padding-block: 32px; grid-template-columns: 1fr; text-align: center; }
+  footer { padding: 32px 18px calc(32px + env(safe-area-inset-bottom)); grid-template-columns: 1fr; text-align: center; }
+  footer p { max-width: 290px; margin-inline: auto; line-height: 1.6; }
+  footer small { max-width: 300px; line-height: 1.5; text-align: center; }
   footer .brand, footer small { justify-self: center; }
+}
+
+@media (max-width: 380px) {
+  .hero-content h1 { font-size: 52px; }
+  .chapter-image { height: 78px; }
+  .chapter-body { padding: 13px 15px 15px; }
+  .chapter-body h2 { font-size: 21px; }
+  .overview-panel { padding: 15px; }
+  .overview-days { margin-inline: -15px; padding-inline: 15px; }
+  .booking-grid { grid-template-columns: 1fr; }
+  .booking-grid a { min-height: 128px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
