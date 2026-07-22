@@ -32,6 +32,7 @@ export type JourneyPoi = {
 }
 
 const PEK: Coordinate = [116.5975, 40.0799]
+const PEK_CLIMB: Coordinate = [115.55, 40.55]
 const VIE: Coordinate = [16.5697, 48.1103]
 const OSL: Coordinate = [11.1004, 60.1939]
 const SVG: Coordinate = [5.6378, 58.8767]
@@ -73,7 +74,8 @@ export const journeyChapters: JourneyChapter[] = [
     summary: '跨越欧亚大陆，经维也纳与奥斯陆转机，在夜色中抵达峡湾之门。',
     cameraZoom: 2.25,
     segments: [
-      flight('pek-vie', PEK, VIE, '北京 → 维也纳', 1.5),
+      flight('pek-takeoff', PEK, PEK_CLIMB, '北京首都机场 · 起飞', 0.35),
+      flight('pek-vie', PEK_CLIMB, VIE, '北京 → 维也纳', 1.5),
       flight('vie-osl', VIE, OSL, '维也纳 → 奥斯陆'),
       flight('osl-svg', OSL, SVG, '奥斯陆 → 斯塔万格', 0.8),
       route('svg-city', 'car', [SVG, tripDays[0].coordinates], '机场 → 斯塔万格市区', 0.4),

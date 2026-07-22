@@ -14,6 +14,10 @@ export type VehicleRenderState = {
   bearing: number
   mode: TransportMode
   visible: boolean
+  flightProgress?: number
+  altitude?: number
+  pitch?: number
+  scaleMultiplier?: number
 }
 
 type MovingMode = Exclude<TransportMode, 'stay'>
@@ -30,6 +34,11 @@ const blue = new THREE.MeshStandardMaterial({ color: 0x315e79, roughness: 0.55 }
 
 const mesh = (geometry: THREE.BufferGeometry, material: THREE.Material) =>
   new THREE.Mesh(geometry, material)
+
+const smoothstep = (value: number) => {
+  const progress = Math.min(Math.max(value, 0), 1)
+  return progress * progress * (3 - 2 * progress)
+}
 
 const buildFallbackCar = () => {
   const group = new THREE.Group()
@@ -170,10 +179,19 @@ export class Vehicle3DLayer implements CustomLayerInterface {
     // glTF +Z is forward, so heading rotates around local +Y.
     model.rotation.y = THREE.MathUtils.degToRad(180 - this.state.bearing)
 
-    const altitude = this.state.mode === 'plane' ? 28000 : this.state.mode === 'ship' ? 20 : 40
+    const flightProgress = this.state.flightProgress ?? 1
+    const takeoffProgress = smoothstep(flightProgress / 0.16)
+    model.rotation.x = THREE.MathUtils.degToRad(-(this.state.pitch ?? (
+      this.state.mode === 'plane' ? 13 * (1 - takeoffProgress) : 0
+    )))
+
+    const defaultAltitude = this.state.mode === 'plane'
+      ? 180 + (28000 - 180) * takeoffProgress
+      : this.state.mode === 'ship' ? 20 : 40
+    const altitude = this.state.altitude ?? defaultAltitude
     const baseScale = 20000
     const zoomScale = 1 / Math.max(1, Math.pow(2, this.map.getZoom() - 2.25))
-    const scale = baseScale * zoomScale
+    const scale = baseScale * zoomScale * (this.state.scaleMultiplier ?? 1)
     const modelMatrix = this.map.transform.getMatrixForModel(this.state.position, altitude)
     const projectionMatrix = new THREE.Matrix4().fromArray(args.defaultProjectionData.mainMatrix)
     const localMatrix = new THREE.Matrix4()

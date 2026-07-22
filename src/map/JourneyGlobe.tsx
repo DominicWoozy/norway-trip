@@ -135,8 +135,8 @@ export function JourneyGlobe({
       map = new maplibregl.Map({
         container: containerRef.current,
         style: VECTOR_STYLE_URL,
-        center: [52, 49],
-        zoom: journeyChapters[0].cameraZoom,
+        center: journeyChapters[0].segments[0].path[0],
+        zoom: window.matchMedia('(max-width: 720px)').matches ? 4.85 : 5.35,
         bearing: 0,
         pitch: STORY_PITCH,
         attributionControl: false,
@@ -269,6 +269,9 @@ export function JourneyGlobe({
       const vehicleLayer = new Vehicle3DLayer({
         ...initialState,
         visible: initialState.mode !== 'stay',
+        flightProgress: 0,
+        altitude: 60,
+        pitch: 0,
       })
       try {
         map.addLayer(vehicleLayer)
@@ -368,11 +371,21 @@ export function JourneyGlobe({
     if (!mapReady || !map || overviewActive) return
 
     const state = getChapterState(activeChapter, chapterProgress)
+    const chapter = journeyChapters[activeChapter]
+    const currentSegment = chapter.segments[state.segmentIndex]
+    const isInitialTakeoff = currentSegment.id === 'pek-takeoff'
+    const takeoffProgress = isInitialTakeoff ? smoothstep(state.segmentProgress) : 1
+    const takeoffPitchProgress = Math.min(state.segmentProgress / 0.82, 1)
+
     vehicleLayerRef.current?.setState({
       position: state.position,
       bearing: state.bearing,
       mode: state.mode,
       visible: state.mode !== 'stay',
+      flightProgress: isInitialTakeoff ? state.segmentProgress : 1,
+      altitude: isInitialTakeoff ? 60 + 27940 * takeoffProgress : undefined,
+      pitch: isInitialTakeoff ? Math.sin(Math.PI * takeoffPitchProgress) * 15 : 0,
+      scaleMultiplier: isInitialTakeoff ? 1 + takeoffProgress * 0.16 : 1,
     })
     if (fallbackVehicleRef.current) {
       const fallback = fallbackVehicleRef.current
@@ -385,16 +398,20 @@ export function JourneyGlobe({
     setRouteLabel(state.label)
     setRouteMode(state.mode)
 
-    const chapter = journeyChapters[activeChapter]
-    const currentSegment = chapter.segments[state.segmentIndex]
     const previousSegment = state.segmentIndex > 0
       ? chapter.segments[state.segmentIndex - 1]
-      : journeyChapters[Math.max(0, activeChapter - 1)].segments.at(-1)!
+      : activeChapter > 0
+        ? journeyChapters[activeChapter - 1].segments.at(-1)!
+        : currentSegment
     const mobile = window.matchMedia('(max-width: 720px)').matches
-    const previousZoom = cameraZoomForSegment(previousSegment.mode, previousSegment.path, mobile)
+    const previousZoom = previousSegment.id === 'pek-takeoff'
+      ? 6.7 - (mobile ? 0.5 : 0)
+      : cameraZoomForSegment(previousSegment.mode, previousSegment.path, mobile)
     const targetZoom = cameraZoomForSegment(currentSegment.mode, currentSegment.path, mobile)
     const zoomTransition = smoothstep(state.segmentProgress / 0.2)
-    const cameraZoom = previousZoom + (targetZoom - previousZoom) * zoomTransition
+    const cameraZoom = isInitialTakeoff
+      ? 5.35 - (mobile ? 0.5 : 0) + takeoffProgress * 1.35
+      : previousZoom + (targetZoom - previousZoom) * zoomTransition
 
     map.jumpTo({
       center: state.position,
