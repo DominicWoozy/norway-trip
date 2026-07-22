@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type RefObject } from 'react'
+import { useEffect, useState, type RefObject } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
@@ -15,7 +15,12 @@ export const useScrollJourney = (
   containerRef: RefObject<HTMLElement | null>,
   chapterCount: number,
 ): ScrollJourneyState => {
-  const [totalProgress, setTotalProgress] = useState(0)
+  const [journeyState, setJourneyState] = useState<ScrollJourneyState>({
+    activeChapter: 0,
+    chapterProgress: 0,
+    overviewActive: false,
+    totalProgress: 0,
+  })
 
   useEffect(() => {
     const container = containerRef.current
@@ -25,31 +30,69 @@ export const useScrollJourney = (
     let lastUpdate = 0
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const mobile = window.matchMedia('(max-width: 720px)').matches
-    const stepCount = chapterCount + 1
+    const chapterElements = Array.from(container.querySelectorAll<HTMLElement>('.scroll-chapter'))
+    const overviewElement = container.querySelector<HTMLElement>('.overview-step')
+
+    const updateChapter = (index: number, progress: number, force = false) => {
+      const now = performance.now()
+      if (!force && mobile && !reducedMotion && now - lastUpdate < 32) return
+      lastUpdate = now
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(() => {
+        setJourneyState((current) => ({
+          ...current,
+          activeChapter: index,
+          chapterProgress: reducedMotion ? (progress < 0.5 ? 0 : 1) : progress,
+          overviewActive: false,
+        }))
+      })
+    }
+
     const context = gsap.context(() => {
       ScrollTrigger.create({
         trigger: container,
         start: 'top top',
         end: 'bottom bottom',
-        scrub: reducedMotion ? false : mobile ? 0.22 : 0.45,
         invalidateOnRefresh: true,
         onUpdate: ({ progress }) => {
-          const now = performance.now()
-          if (mobile && !reducedMotion && now - lastUpdate < 32) return
-          lastUpdate = now
-          cancelAnimationFrame(frame)
-          frame = requestAnimationFrame(() => {
-            const next = reducedMotion
-              ? Math.min(Math.round(progress * stepCount) / stepCount, 1)
-              : progress
-            setTotalProgress(next)
-          })
+          setJourneyState((current) => ({ ...current, totalProgress: progress }))
         },
       })
+
+      chapterElements.forEach((element, index) => {
+        ScrollTrigger.create({
+          trigger: element,
+          start: 'top top',
+          end: 'bottom top',
+          invalidateOnRefresh: true,
+          onEnter: () => updateChapter(index, 0, true),
+          onEnterBack: () => updateChapter(index, 1, true),
+          onUpdate: ({ isActive, progress }) => {
+            if (isActive) updateChapter(index, progress)
+          },
+        })
+      })
+
+      if (overviewElement) {
+        ScrollTrigger.create({
+          trigger: overviewElement,
+          start: 'top top',
+          end: 'bottom top',
+          invalidateOnRefresh: true,
+          onEnter: () => setJourneyState((current) => ({
+            ...current,
+            chapterProgress: 1,
+            overviewActive: true,
+          })),
+          onEnterBack: () => setJourneyState((current) => ({ ...current, overviewActive: true })),
+          onLeaveBack: () => setJourneyState((current) => ({ ...current, overviewActive: false })),
+        })
+      }
     }, container)
 
     const resizeObserver = new ResizeObserver(() => ScrollTrigger.refresh())
     resizeObserver.observe(container)
+    ScrollTrigger.refresh()
 
     return () => {
       cancelAnimationFrame(frame)
@@ -58,16 +101,6 @@ export const useScrollJourney = (
     }
   }, [chapterCount, containerRef])
 
-  return useMemo(() => {
-    const stepCount = chapterCount + 1
-    const scaled = Math.min(totalProgress * stepCount, stepCount - 0.00001)
-    const step = Math.floor(scaled)
-    return {
-      activeChapter: Math.min(step, chapterCount - 1),
-      chapterProgress: step >= chapterCount ? 1 : scaled - step,
-      overviewActive: step >= chapterCount,
-      totalProgress,
-    }
-  }, [chapterCount, totalProgress])
+  return journeyState
 }
 
