@@ -1,6 +1,7 @@
 import { travelLegs, tripDays, type TripDay } from '../itinerary'
 import { greatCircle, type Coordinate } from '../geo/routeMath'
 import { assetUrl } from '../assets'
+import { ROAD_ROUTES } from './roadRoutes'
 
 export type TransportMode = 'car' | 'plane' | 'ship' | 'stay'
 
@@ -148,7 +149,13 @@ const route = (
   path: Coordinate[],
   label: string,
   weight = 1,
-): NarrativeSegment => ({ id, mode, path, label, weight })
+): NarrativeSegment => ({
+  id,
+  mode,
+  path: mode === 'car' ? ROAD_ROUTES[id] ?? path : path,
+  label,
+  weight,
+})
 
 const stay = (id: string, at: Coordinate, label: string): NarrativeSegment => ({
   id,
