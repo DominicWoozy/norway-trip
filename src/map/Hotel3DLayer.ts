@@ -8,7 +8,8 @@ import type {
 import type { JourneyHotel } from '../data/journey'
 import { assetUrl } from '../assets'
 
-const themeColor = new THREE.Color(0xec5b36)
+const hotelColor = new THREE.Color(0x55c4c1)
+const hotelDark = new THREE.Color(0x174d5a)
 
 const buildFallbackHouse = () => {
   const house = new THREE.Group()
@@ -19,7 +20,7 @@ const buildFallbackHouse = () => {
   walls.position.y = 2.2
   const roof = new THREE.Mesh(
     new THREE.ConeGeometry(5.1, 3.1, 4),
-    new THREE.MeshStandardMaterial({ color: 0xec5b36, roughness: 0.7 }),
+    new THREE.MeshStandardMaterial({ color: hotelColor, roughness: 0.7 }),
   )
   roof.position.y = 5.9
   roof.rotation.y = Math.PI / 4
@@ -39,9 +40,12 @@ const normalizeModel = (source: THREE.Group) => {
     const tintedMaterials = sourceMaterials.map((sourceMaterial) => {
       const material = sourceMaterial.clone()
       if (material instanceof THREE.MeshStandardMaterial) {
-        material.color.lerp(themeColor, 0.42)
-        material.emissive = themeColor.clone().multiplyScalar(0.08)
-        material.emissiveIntensity = 0.35
+        const targetColor = material.color.getHSL({ h: 0, s: 0, l: 0 }).l > 0.48
+          ? new THREE.Color(0xf6f1e4)
+          : hotelColor
+        material.color.lerp(targetColor, 0.55)
+        material.emissive = hotelDark.clone().multiplyScalar(0.1)
+        material.emissiveIntensity = 0.42
         material.roughness = Math.max(material.roughness, 0.48)
       }
       return material
@@ -58,6 +62,19 @@ const normalizeModel = (source: THREE.Group) => {
 
   const wrapper = new THREE.Group()
   wrapper.add(source)
+  const halo = new THREE.Mesh(
+    new THREE.RingGeometry(5.5, 6.5, 32),
+    new THREE.MeshBasicMaterial({
+      color: hotelColor,
+      transparent: true,
+      opacity: 0.88,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    }),
+  )
+  halo.rotation.x = -Math.PI / 2
+  halo.position.y = 0.12
+  wrapper.add(halo)
   wrapper.rotation.y = Math.PI / 4
   return wrapper
 }
@@ -111,7 +128,7 @@ export class Hotel3DLayer implements CustomLayerInterface {
     const keyLight = new THREE.DirectionalLight(0xffffff, 3.4)
     keyLight.position.set(-20, -25, 50)
     this.scene.add(keyLight)
-    const themeLight = new THREE.DirectionalLight(0xec5b36, 1.6)
+    const themeLight = new THREE.DirectionalLight(hotelColor, 1.8)
     themeLight.position.set(25, 12, 20)
     this.scene.add(themeLight)
 
@@ -131,11 +148,11 @@ export class Hotel3DLayer implements CustomLayerInterface {
     if (!this.map || !this.renderer || this.visibleIds.size === 0) return
 
     const projectionMatrix = new THREE.Matrix4().fromArray(args.defaultProjectionData.mainMatrix)
-    const scale = 23000 / Math.max(1, Math.pow(2, this.map.getZoom() - 2.25))
+    const scale = 26000 / Math.max(1, Math.pow(2, this.map.getZoom() - 2.25))
 
     this.hotels.forEach((hotel) => {
       if (!this.visibleIds.has(hotel.id)) return
-      const modelMatrix = this.map!.transform.getMatrixForModel(hotel.coordinates, 12)
+      const modelMatrix = this.map!.transform.getMatrixForModel(hotel.coordinates, 120)
       const localMatrix = new THREE.Matrix4()
         .fromArray(modelMatrix)
         .scale(new THREE.Vector3(scale, scale, scale))
