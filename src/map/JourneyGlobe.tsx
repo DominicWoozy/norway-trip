@@ -39,7 +39,7 @@ type CurrentJourneyState = {
   segmentProgress: number
 }
 
-const STORY_PITCH = 0
+const STORY_PITCH = 18
 
 const smoothstep = (value: number) => {
   const progress = Math.min(Math.max(value, 0), 1)
