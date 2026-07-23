@@ -45,7 +45,7 @@ function App() {
             3D: <a href="https://poly.pizza/m/unqqkULtRU" target="_blank" rel="noreferrer">Car by Quaternius</a>
             {' · '}<a href="https://github.com/CesiumGS/cesium/tree/main/Apps/SampleData/models/CesiumAir" target="_blank" rel="noreferrer">CesiumAir</a>
             {' · '}<a href="https://poly.pizza/m/yq9EKmEmfC" target="_blank" rel="noreferrer">Cruise Ship</a>
-            {' · '}<a href="https://poly.pizza/m/npP0RG1MR3" target="_blank" rel="noreferrer">House Pod</a>
+            {' · '}<a href="https://poly.pizza/m/YDGLLT0emC" target="_blank" rel="noreferrer">Cottage</a>
           </span>
         </small>
       </footer>
