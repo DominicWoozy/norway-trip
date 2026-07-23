@@ -353,8 +353,24 @@ export function JourneyGlobe({
     const controller = new AbortController()
     const roadRequests = [
       {
+        id: 'svg-city',
+        points: [[5.6378, 58.8767], [5.7308, 58.96833]] as Coordinate[],
+      },
+      {
         id: 'stavanger-pulpit',
         points: [[5.7308, 58.96833], [6.1904, 58.9864]] as Coordinate[],
+      },
+      {
+        id: 'pulpit-svg',
+        points: [[6.1904, 58.9864], [5.6378, 58.8767]] as Coordinate[],
+      },
+      {
+        id: 'osl-airport-hotel',
+        points: [[11.1004, 60.1939], [11.09552, 60.19237]] as Coordinate[],
+      },
+      {
+        id: 'hotel-osl-airport',
+        points: [[11.09552, 60.19237], [11.1004, 60.1939]] as Coordinate[],
       },
       {
         id: 'svj-svinoya',
@@ -394,9 +410,25 @@ export function JourneyGlobe({
         id: 'port-hotel-port',
         points: [[14.5682, 68.2317], [14.57965, 68.23437], [14.5682, 68.2317]] as Coordinate[],
       },
+      {
+        id: 'tromso-port-hotel',
+        points: [[18.9553, 69.6492], [18.95198, 69.646]] as Coordinate[],
+      },
+      {
+        id: 'tromso-airport',
+        points: [[18.95198, 69.646], [18.9189, 69.6833]] as Coordinate[],
+      },
+      {
+        id: 'osl-city',
+        points: [[11.1004, 60.1939], [10.75055, 59.91058]] as Coordinate[],
+      },
+      {
+        id: 'city-osl',
+        points: [[10.75055, 59.91058], [11.1004, 60.1939]] as Coordinate[],
+      },
     ]
 
-    Promise.all(roadRequests.map(async ({ id, points }) => {
+    Promise.allSettled(roadRequests.map(async ({ id, points }) => {
       const response = await fetch(
         `https://router.project-osrm.org/route/v1/driving/${points.map((point) => point.join(',')).join(';')}?overview=full&geometries=geojson`,
         { signal: controller.signal },
@@ -409,8 +441,10 @@ export function JourneyGlobe({
       if (data.code !== 'Ok' || !data.routes[0]) throw new Error('Route unavailable')
       return { id, path: data.routes[0].geometry.coordinates }
     }))
-      .then((routes) => {
-        routes.forEach(({ id, path }) => {
+      .then((results) => {
+        results.forEach((result) => {
+          if (result.status !== 'fulfilled') return
+          const { id, path } = result.value
           journeyChapters.forEach((chapter) => {
             const segment = chapter.segments.find((item) => item.id === id)
             if (segment) segment.path = path

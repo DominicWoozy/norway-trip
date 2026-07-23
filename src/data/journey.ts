@@ -49,7 +49,12 @@ const BOO: Coordinate = [14.3653, 67.2692]
 const SVJ: Coordinate = [14.6692, 68.2433]
 const TOS: Coordinate = [18.9189, 69.6833]
 const MUC: Coordinate = [11.7861, 48.3538]
+const STAVANGER_HOTEL: Coordinate = [5.7308, 58.96833]
+const OSLO_AIRPORT_HOTEL: Coordinate = [11.09552, 60.19237]
 const SVINOYA: Coordinate = [14.57965, 68.23437]
+const TROMSO_PORT: Coordinate = [18.9553, 69.6492]
+const TROMSO_HOTEL: Coordinate = [18.95198, 69.646]
+const OSLO_CENTRAL_HOTEL: Coordinate = [10.75055, 59.91058]
 const SVOLVAER_PORT: Coordinate = [14.5682, 68.2317]
 const DJEVELPORTEN_TRAILHEAD: Coordinate = [14.577674, 68.244857]
 const HAUKLAND: Coordinate = [13.545, 68.1993]
@@ -100,7 +105,7 @@ export const journeyChapters: JourneyChapter[] = [
       flight('pek-vie', PEK_CLIMB, VIE, '北京 → 维也纳', 1.5),
       flight('vie-osl', VIE, OSL, '维也纳 → 奥斯陆'),
       flight('osl-svg', OSL, SVG, '奥斯陆 → 斯塔万格', 0.8),
-      route('svg-city', 'car', [SVG, tripDays[0].coordinates], '机场 → 斯塔万格市区', 0.4),
+      route('svg-city', 'car', [SVG, STAVANGER_HOTEL], '机场 → 斯塔万格酒店', 0.4),
     ],
   },
   {
@@ -114,6 +119,8 @@ export const journeyChapters: JourneyChapter[] = [
       route('stavanger-pulpit', 'car', travelLegs[0], '斯塔万格 → 布道石', 1.2),
       route('pulpit-svg', 'car', [tripDays[1].coordinates, SVG], '布道石 → 斯塔万格机场', 0.9),
       flight('svg-osl', SVG, OSL, '斯塔万格 → 奥斯陆', 0.7),
+      route('osl-airport-hotel', 'car', [OSL, OSLO_AIRPORT_HOTEL], '奥斯陆机场 → 机场酒店', 0.2),
+      stay('oslo-airport-night', OSLO_AIRPORT_HOTEL, '入住 Radisson Blu Airport Hotel'),
     ],
   },
   {
@@ -124,6 +131,7 @@ export const journeyChapters: JourneyChapter[] = [
     summary: '09:00 从奥斯陆出发，经博德换乘螺旋桨支线，13:10 抵达斯沃尔维尔并入住 Svinøya Rorbuer。',
     cameraZoom: 3.45,
     segments: [
+      route('hotel-osl-airport', 'car', [OSLO_AIRPORT_HOTEL, OSL], '机场酒店 → OSL 航站楼', 0.2),
       flight('osl-boo', OSL, BOO, '奥斯陆 → 博德', 1.2),
       flight('boo-svj', BOO, SVJ, '博德 → 斯沃尔维尔', 0.8),
       route('svj-svinoya', 'car', [SVJ, SVINOYA], 'SVJ 机场 → Svinøya Rorbuer', 0.45),
@@ -198,7 +206,11 @@ export const journeyChapters: JourneyChapter[] = [
     eyebrow: 'HARSTAD · FINNSNES · TROMSØ',
     summary: '清晨经过 Trondenes 与 Senja 东岸，沿 Malangen 峡湾驶入北极之都。',
     cameraZoom: 5.25,
-    segments: [route('harstad-tromso', 'ship', travelLegs[5], '哈尔斯塔 → 特罗姆瑟')],
+    segments: [
+      route('harstad-tromso', 'ship', travelLegs[5], '哈尔斯塔 → 特罗姆瑟'),
+      route('tromso-port-hotel', 'car', [TROMSO_PORT, TROMSO_HOTEL], '特罗姆瑟码头 → Skaret by VANDER', 0.25),
+      stay('skaret-checkin', TROMSO_HOTEL, '入住 Skaret by VANDER'),
+    ],
   },
   {
     id: 'tromso-city',
@@ -226,9 +238,9 @@ export const journeyChapters: JourneyChapter[] = [
     summary: '从北极圈飞回奥斯陆，在返程前用攀岩、购物和城市漫步收尾。',
     cameraZoom: 3.45,
     segments: [
-      route('tromso-airport', 'car', [tripDays[9 - 1].coordinates, TOS], '市区 → 特罗姆瑟机场', 0.3),
+      route('tromso-airport', 'car', [TROMSO_HOTEL, TOS], 'Skaret by VANDER → 特罗姆瑟机场', 0.3),
       flight('tos-osl', TOS, OSL, '特罗姆瑟 → 奥斯陆', 1.4),
-      route('osl-city', 'car', [OSL, tripDays[9].coordinates], '奥斯陆机场 → 市区', 0.4),
+      route('osl-city', 'car', [OSL, OSLO_CENTRAL_HOTEL], '奥斯陆机场 → Comfort Hotel Grand Central', 0.4),
     ],
   },
   {
@@ -239,7 +251,7 @@ export const journeyChapters: JourneyChapter[] = [
     summary: '从奥斯陆经慕尼黑返回北京，十一天的北境旅程在跨越大陆的航线上结束。',
     cameraZoom: 2.2,
     segments: [
-      route('city-osl', 'car', [tripDays[10].coordinates, OSL], '奥斯陆市区 → 机场', 0.3),
+      route('city-osl', 'car', [OSLO_CENTRAL_HOTEL, OSL], 'Comfort Hotel Grand Central → 奥斯陆机场', 0.3),
       flight('osl-muc', OSL, MUC, '奥斯陆 → 慕尼黑', 0.8),
       flight('muc-pek', MUC, PEK, '慕尼黑 → 北京', 1.6),
     ],
@@ -251,7 +263,7 @@ export const journeyHotels: JourneyHotel[] = [
     id: 'radisson-stavanger',
     name: 'Radisson Blu Atlantic Hotel Stavanger',
     city: '斯塔万格',
-    coordinates: [5.7308, 58.96833],
+    coordinates: STAVANGER_HOTEL,
     dates: '09.25–09.26',
     chapterIds: ['arrival-stavanger'],
   },
@@ -259,7 +271,7 @@ export const journeyHotels: JourneyHotel[] = [
     id: 'radisson-oslo-airport',
     name: 'Radisson Blu Airport Hotel Oslo Gardermoen',
     city: '奥斯陆机场',
-    coordinates: [11.09552, 60.19237],
+    coordinates: OSLO_AIRPORT_HOTEL,
     dates: '09.26–09.27',
     chapterIds: ['pulpit-rock', 'fly-lofoten'],
   },
@@ -275,7 +287,7 @@ export const journeyHotels: JourneyHotel[] = [
     id: 'skaret-vander',
     name: 'Skaret by VANDER',
     city: '特罗姆瑟',
-    coordinates: [18.95198, 69.646],
+    coordinates: TROMSO_HOTEL,
     dates: '10.01–10.04 · 3晚',
     chapterIds: ['coastal-morning', 'tromso-city', 'tromso-nature'],
   },
@@ -283,7 +295,7 @@ export const journeyHotels: JourneyHotel[] = [
     id: 'comfort-oslo',
     name: 'Comfort Hotel Grand Central',
     city: '奥斯陆中央站',
-    coordinates: [10.75055, 59.91058],
+    coordinates: OSLO_CENTRAL_HOTEL,
     dates: '10.04–10.05',
     chapterIds: ['return-oslo', 'homebound'],
   },
