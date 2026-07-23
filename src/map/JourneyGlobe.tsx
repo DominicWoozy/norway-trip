@@ -447,6 +447,11 @@ export function JourneyGlobe({
     })
 
     if (overviewActive) {
+      map.dragPan.enable()
+      map.dragRotate.enable()
+      map.doubleClickZoom.enable()
+      map.touchZoomRotate.enable()
+      map.keyboard.enable()
       map.setProjection({ type: 'mercator' })
       vehicleLayerRef.current?.setState({
         position: journeyChapters.at(-1)!.day.coordinates,
@@ -459,6 +464,12 @@ export function JourneyGlobe({
       setSourceLines(map, 'journey-progress', getAllRouteLines())
       map.easeTo({ center: [12.8, 64.4], zoom: 4.05, pitch: 0, bearing: 0, duration: 1300 })
     } else {
+      map.dragPan.disable()
+      map.dragRotate.disable()
+      map.doubleClickZoom.disable()
+      map.touchZoomRotate.disable()
+      map.keyboard.disable()
+      map.scrollZoom.disable()
       popupRef.current?.remove()
       map.setProjection({ type: 'globe' })
     }

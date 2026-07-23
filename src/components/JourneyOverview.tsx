@@ -1,4 +1,5 @@
-import { ArrowRight, BedDouble, Compass, MapPin, Plane, UtensilsCrossed } from 'lucide-react'
+import { ArrowRight, BedDouble, ChevronDown, ChevronUp, Compass, MapPin, Plane, UtensilsCrossed } from 'lucide-react'
+import { useState } from 'react'
 import { getQuickGuide, journeyChapters, journeyPois, type JourneyPoi } from '../data/journey'
 
 type JourneyOverviewProps = {
@@ -15,6 +16,9 @@ const guideCityForDay = (dayId: number) => {
 }
 
 export function JourneyOverview({ selectedDay, onSelectDay, onSelectPoi }: JourneyOverviewProps) {
+  const [mobileCollapsed, setMobileCollapsed] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 720px)').matches,
+  )
   const chapter = journeyChapters[selectedDay]
   const guide = getQuickGuide(chapter.day.id)
   const guideCity = guideCityForDay(chapter.day.id)
@@ -31,7 +35,16 @@ export function JourneyOverview({ selectedDay, onSelectDay, onSelectPoi }: Journ
   const renderGuideButton = (name: string, kind: 'sight' | 'food') => {
     const poi = findPoi(name)
     return (
-      <button type="button" key={name} onClick={() => poi && onSelectPoi(poi)} disabled={!poi}>
+      <button
+        type="button"
+        key={name}
+        onClick={() => {
+          if (!poi) return
+          onSelectPoi(poi)
+          setMobileCollapsed(true)
+        }}
+        disabled={!poi}
+      >
         <span>{name}</span>
         {poi && <MapPin size={11} />}
         {!poi && <small>{kind === 'food' ? '当地风味' : '推荐地点'}</small>}
@@ -40,7 +53,15 @@ export function JourneyOverview({ selectedDay, onSelectDay, onSelectPoi }: Journ
   }
 
   return (
-    <div className="overview-panel">
+    <div className={`overview-panel ${mobileCollapsed ? 'mobile-collapsed' : ''}`}>
+      <button
+        type="button"
+        className="overview-toggle"
+        onClick={() => setMobileCollapsed((collapsed) => !collapsed)}
+        aria-expanded={!mobileCollapsed}
+      >
+        {mobileCollapsed ? <><ChevronUp size={15} /> 展开行程</> : <><ChevronDown size={15} /> 收起以操作地图</>}
+      </button>
       <div className="overview-heading">
         <div>
           <span>THE COMPLETE ROUTE</span>
@@ -55,7 +76,10 @@ export function JourneyOverview({ selectedDay, onSelectDay, onSelectPoi }: Journ
             type="button"
             key={day.id}
             className={selectedDay === index ? 'active' : ''}
-            onClick={() => onSelectDay(index)}
+            onClick={() => {
+              onSelectDay(index)
+              setMobileCollapsed(true)
+            }}
           >
             <span>{day.date}</span>
             <small>{day.place}</small>
