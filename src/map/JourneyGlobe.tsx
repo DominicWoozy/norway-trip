@@ -447,8 +447,14 @@ export function JourneyGlobe({
     })
 
     if (overviewActive) {
-      map.dragPan.enable()
-      map.dragRotate.enable()
+      const mobile = window.matchMedia('(max-width: 720px)').matches
+      if (mobile) {
+        map.dragPan.disable()
+        map.dragRotate.disable()
+      } else {
+        map.dragPan.enable()
+        map.dragRotate.enable()
+      }
       map.doubleClickZoom.enable()
       map.touchZoomRotate.enable()
       map.keyboard.enable()

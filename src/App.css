@@ -518,7 +518,8 @@ footer small a { color: inherit; }
     max-height: 42dvh;
     padding: 16px 18px 18px;
     overflow-y: auto;
-    overscroll-behavior: contain;
+    overscroll-behavior: auto;
+    -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
   }
   .overview-toggle {
