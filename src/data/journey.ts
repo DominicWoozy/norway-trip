@@ -65,8 +65,74 @@ const REINE: Coordinate = [13.0888, 67.9324]
 const KABELVAG: Coordinate = [14.481, 68.211]
 const HENNINGSVAER: Coordinate = [14.2017, 68.1537]
 const HOV_GIMSOY: Coordinate = [14.114, 68.342]
-const RAFTSUNDET: Coordinate = [15.12, 68.39]
+const RAFTSUNDET: Coordinate = [15.22, 68.39]
 const TROLLFJORD: Coordinate = [15.313, 68.363]
+
+const SVOLVAER_TO_RAFTSUNDET: Coordinate[] = [
+  SVOLVAER_PORT,
+  [14.64, 68.205],
+  [14.76, 68.195],
+  [14.9, 68.21],
+  [15.02, 68.245],
+  [15.13, 68.29],
+  [15.2, 68.335],
+  [15.24, 68.365],
+]
+
+const TROLLFJORD_SEA_ROUTE: Coordinate[] = [
+  ...SVOLVAER_TO_RAFTSUNDET,
+  [15.27, 68.37],
+  TROLLFJORD,
+  [15.27, 68.37],
+  ...SVOLVAER_TO_RAFTSUNDET.slice(0, -1).reverse(),
+]
+
+const COASTAL_SVOLVAER_HARSTAD: Coordinate[] = [
+  ...SVOLVAER_TO_RAFTSUNDET,
+  RAFTSUNDET,
+  [15.22, 68.43],
+  [15.18, 68.475],
+  [15.08, 68.515],
+  [14.98, 68.545],
+  [14.9128, 68.5646], // Stokmarknes
+  [14.99, 68.59],
+  [15.1, 68.62],
+  [15.24, 68.66],
+  [15.38, 68.69],
+  [15.4138, 68.6957], // Sortland
+  [15.48, 68.74],
+  [15.55, 68.79],
+  [15.63, 68.84],
+  [15.72, 68.885],
+  [15.82, 68.93],
+  [15.9684, 68.9693], // Risøyhamn
+  [16.07, 68.95],
+  [16.18, 68.91],
+  [16.3, 68.86],
+  [16.43, 68.82],
+  [16.5415, 68.7988], // Harstad
+]
+
+const COASTAL_HARSTAD_TROMSO: Coordinate[] = [
+  [16.5415, 68.7988],
+  [16.66, 68.84],
+  [16.82, 68.9],
+  [17.0, 68.98],
+  [17.18, 69.06],
+  [17.36, 69.12],
+  [17.56, 69.17],
+  [17.76, 69.205],
+  [17.9817, 69.2291], // Finnsnes
+  [18.03, 69.285],
+  [18.09, 69.345],
+  [18.15, 69.405],
+  [18.25, 69.46],
+  [18.4, 69.505],
+  [18.58, 69.545],
+  [18.75, 69.59],
+  [18.88, 69.63],
+  [18.9553, 69.6492], // Tromsø
+]
 
 const flight = (id: string, from: Coordinate, to: Coordinate, label: string, weight = 1): NarrativeSegment => ({
   id,
@@ -185,7 +251,7 @@ export const journeyChapters: JourneyChapter[] = [
       route(
         'trollfjord-day-cruise',
         'ship',
-        [SVOLVAER_PORT, RAFTSUNDET, TROLLFJORD, RAFTSUNDET, SVOLVAER_PORT],
+        TROLLFJORD_SEA_ROUTE,
         '斯沃尔维尔 → Raftsundet → Trollfjord → 斯沃尔维尔',
         0.9,
       ),
@@ -193,7 +259,7 @@ export const journeyChapters: JourneyChapter[] = [
       route(
         'svolvaer-harstad',
         'ship',
-        [SVOLVAER_PORT, ...travelLegs[4].slice(1)],
+        COASTAL_SVOLVAER_HARSTAD,
         '22:30 斯沃尔维尔 → 哈尔斯塔',
         1.1,
       ),
@@ -207,7 +273,7 @@ export const journeyChapters: JourneyChapter[] = [
     summary: '清晨经过 Trondenes 与 Senja 东岸，沿 Malangen 峡湾驶入北极之都。',
     cameraZoom: 5.25,
     segments: [
-      route('harstad-tromso', 'ship', travelLegs[5], '哈尔斯塔 → 特罗姆瑟'),
+      route('harstad-tromso', 'ship', COASTAL_HARSTAD_TROMSO, '哈尔斯塔 → 特罗姆瑟'),
       route('tromso-port-hotel', 'car', [TROMSO_PORT, TROMSO_HOTEL], '特罗姆瑟码头 → Skaret by VANDER', 0.25),
       stay('skaret-checkin', TROMSO_HOTEL, '入住 Skaret by VANDER'),
     ],
