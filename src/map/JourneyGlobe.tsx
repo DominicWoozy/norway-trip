@@ -373,7 +373,14 @@ export function JourneyGlobe({
     const currentSegment = chapter.segments[state.segmentIndex]
     const hotelsForChapter = journeyHotels.filter((hotel) => hotel.chapterIds.includes(chapter.id))
     hotelLayerRef.current?.setVisibleHotels(hotelsForChapter.map((hotel) => hotel.id))
-    setActiveHotel(hotelsForChapter[0] ?? null)
+    const nearestHotel = hotelsForChapter.reduce<JourneyHotel | null>((nearest, hotel) => {
+      if (!nearest) return hotel
+      return haversineDistance(state.position, hotel.coordinates) <
+        haversineDistance(state.position, nearest.coordinates)
+        ? hotel
+        : nearest
+    }, null)
+    setActiveHotel(nearestHotel)
     const isInitialTakeoff = currentSegment.id === 'pek-takeoff'
     const takeoffProgress = isInitialTakeoff ? smoothstep(state.segmentProgress) : 1
     const takeoffPitchProgress = Math.min(state.segmentProgress / 0.82, 1)

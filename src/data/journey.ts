@@ -275,7 +275,7 @@ export const journeyHotels: JourneyHotel[] = [
     city: '斯塔万格',
     coordinates: STAVANGER_HOTEL,
     dates: '09.25–09.26',
-    chapterIds: ['arrival-stavanger'],
+    chapterIds: ['arrival-stavanger', 'pulpit-rock'],
   },
   {
     id: 'radisson-oslo-airport',
