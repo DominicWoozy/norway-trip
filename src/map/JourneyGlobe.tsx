@@ -46,6 +46,21 @@ const smoothstep = (value: number) => {
   return progress * progress * (3 - 2 * progress)
 }
 
+const getFlightMotion = (progress: number, startsAirborne = false) => {
+  const climbProgress = startsAirborne ? 1 : smoothstep(progress / 0.16)
+  const descentProgress = smoothstep((progress - 0.78) / 0.22)
+  const altitude = 180 + (28000 - 180) * climbProgress * (1 - descentProgress)
+
+  let pitch = 0
+  if (!startsAirborne && progress < 0.16) {
+    pitch = Math.sin(Math.PI * (progress / 0.16)) * 14
+  } else if (progress > 0.78) {
+    pitch = -Math.sin(Math.PI * ((progress - 0.78) / 0.22)) * 9
+  }
+
+  return { altitude, pitch }
+}
+
 const VECTOR_STYLE_URL = 'https://tiles.openfreemap.org/styles/liberty'
 
 const getAllRouteLines = () =>
@@ -362,15 +377,23 @@ export function JourneyGlobe({
     const isInitialTakeoff = currentSegment.id === 'pek-takeoff'
     const takeoffProgress = isInitialTakeoff ? smoothstep(state.segmentProgress) : 1
     const takeoffPitchProgress = Math.min(state.segmentProgress / 0.82, 1)
+    const isFlight = state.mode === 'plane'
+    const flightMotion = isFlight
+      ? getFlightMotion(state.segmentProgress, currentSegment.id === 'pek-vie')
+      : null
 
     vehicleLayerRef.current?.setState({
       position: state.position,
       bearing: state.bearing,
       mode: state.mode,
       visible: state.mode !== 'stay',
-      flightProgress: isInitialTakeoff ? state.segmentProgress : 1,
-      altitude: isInitialTakeoff ? 60 + 27940 * takeoffProgress : undefined,
-      pitch: isInitialTakeoff ? Math.sin(Math.PI * takeoffPitchProgress) * 15 : 0,
+      flightProgress: isFlight ? state.segmentProgress : 1,
+      altitude: isInitialTakeoff
+        ? 60 + 27940 * takeoffProgress
+        : flightMotion?.altitude,
+      pitch: isInitialTakeoff
+        ? Math.sin(Math.PI * takeoffPitchProgress) * 15
+        : flightMotion?.pitch,
       scaleMultiplier: isInitialTakeoff ? 1 + takeoffProgress * 0.16 : 1,
     })
     if (fallbackVehicleRef.current) {
@@ -395,9 +418,16 @@ export function JourneyGlobe({
       : cameraZoomForSegment(previousSegment.mode, previousSegment.path, mobile)
     const targetZoom = cameraZoomForSegment(currentSegment.mode, currentSegment.path, mobile)
     const zoomTransition = smoothstep(state.segmentProgress / 0.2)
-    const cameraZoom = isInitialTakeoff
+    const baseCameraZoom = isInitialTakeoff
       ? 5.35 - (mobile ? 0.5 : 0) + takeoffProgress * 1.35
       : previousZoom + (targetZoom - previousZoom) * zoomTransition
+    const flightEdgeDistance = currentSegment.id === 'pek-vie'
+      ? 1 - state.segmentProgress
+      : Math.min(state.segmentProgress, 1 - state.segmentProgress)
+    const flightEdgeZoom = isFlight && !isInitialTakeoff
+      ? (1 - smoothstep(flightEdgeDistance / 0.18)) * 0.55
+      : 0
+    const cameraZoom = baseCameraZoom + flightEdgeZoom
 
     map.jumpTo({
       center: state.position,

@@ -181,12 +181,18 @@ export class Vehicle3DLayer implements CustomLayerInterface {
 
     const flightProgress = this.state.flightProgress ?? 1
     const takeoffProgress = smoothstep(flightProgress / 0.16)
+    const landingProgress = smoothstep((flightProgress - 0.78) / 0.22)
+    const defaultFlightPitch = flightProgress < 0.16
+      ? Math.sin(Math.PI * (flightProgress / 0.16)) * 13
+      : flightProgress > 0.78
+        ? -Math.sin(Math.PI * ((flightProgress - 0.78) / 0.22)) * 9
+        : 0
     model.rotation.x = THREE.MathUtils.degToRad(-(this.state.pitch ?? (
-      this.state.mode === 'plane' ? 13 * (1 - takeoffProgress) : 0
+      this.state.mode === 'plane' ? defaultFlightPitch : 0
     )))
 
     const defaultAltitude = this.state.mode === 'plane'
-      ? 180 + (28000 - 180) * takeoffProgress
+      ? 180 + (28000 - 180) * takeoffProgress * (1 - landingProgress)
       : this.state.mode === 'ship' ? 20 : 40
     const altitude = this.state.altitude ?? defaultAltitude
     const baseScale = 20000
