@@ -19,6 +19,7 @@ dist-ssr
 .DS_Store
 .agents
 .claude
+.tmp
 skills-lock.json
 *.suo
 *.ntvs*

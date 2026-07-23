@@ -6,10 +6,18 @@ import maplibregl, {
   type Popup,
 } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import { journeyChapters, journeyPois, type JourneyPoi, type TransportMode } from '../data/journey'
+import {
+  journeyChapters,
+  journeyHotels,
+  journeyPois,
+  type JourneyHotel,
+  type JourneyPoi,
+  type TransportMode,
+} from '../data/journey'
 import { haversineDistance, samplePath, type Coordinate } from '../geo/routeMath'
 import { Vehicle3DLayer } from './Vehicle3DLayer'
 import { assetUrl } from '../assets'
+import { Hotel3DLayer } from './Hotel3DLayer'
 
 type JourneyGlobeProps = {
   activeChapter: number
@@ -115,6 +123,7 @@ export function JourneyGlobe({
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MapLibreMap | null>(null)
   const vehicleLayerRef = useRef<Vehicle3DLayer | null>(null)
+  const hotelLayerRef = useRef<Hotel3DLayer | null>(null)
   const fallbackVehicleRef = useRef<Marker | null>(null)
   const dayMarkersRef = useRef<Array<{ marker: Marker; element: HTMLButtonElement }>>([])
   const poiMarkersRef = useRef<Array<{ marker: Marker; element: HTMLButtonElement }>>([])
@@ -124,6 +133,7 @@ export function JourneyGlobe({
   const [mapError, setMapError] = useState(false)
   const [routeLabel, setRouteLabel] = useState('北京 → 维也纳')
   const [routeMode, setRouteMode] = useState<TransportMode>('plane')
+  const [activeHotel, setActiveHotel] = useState<JourneyHotel | null>(journeyHotels[0])
 
   callbackRef.current = { onSelectDay, onSelectPoi }
 
@@ -285,6 +295,15 @@ export function JourneyGlobe({
           .addTo(map)
       }
 
+      const hotelLayer = new Hotel3DLayer(journeyHotels)
+      map.addLayer(hotelLayer)
+      hotelLayer.setVisibleHotels(
+        journeyHotels
+          .filter((hotel) => hotel.chapterIds.includes(journeyChapters[0].id))
+          .map((hotel) => hotel.id),
+      )
+      hotelLayerRef.current = hotelLayer
+
       dayMarkersRef.current = journeyChapters.map((chapter, index) => {
         const element = document.createElement('button')
         element.className = 'overview-day-marker'
@@ -323,6 +342,7 @@ export function JourneyGlobe({
       dayMarkersRef.current = []
       poiMarkersRef.current = []
       vehicleLayerRef.current = null
+      hotelLayerRef.current = null
       fallbackVehicleRef.current = null
       map.remove()
       mapRef.current = null
@@ -332,14 +352,53 @@ export function JourneyGlobe({
   useEffect(() => {
     const controller = new AbortController()
     const roadRequests = [
-      { id: 'stavanger-pulpit', from: [5.7331, 58.969] as Coordinate, to: [6.1904, 58.9864] as Coordinate },
-      { id: 'lofoten-west-road', from: [13.6506, 68.2088] as Coordinate, to: [13.1784, 68.0892] as Coordinate },
-      { id: 'lofoten-east-road', from: [13.1784, 68.0892] as Coordinate, to: [14.472, 68.234] as Coordinate },
+      {
+        id: 'stavanger-pulpit',
+        points: [[5.7308, 58.96833], [6.1904, 58.9864]] as Coordinate[],
+      },
+      {
+        id: 'svj-svinoya',
+        points: [[14.6692, 68.2433], [14.57965, 68.23437]] as Coordinate[],
+      },
+      {
+        id: 'svinoya-djevelporten',
+        points: [[14.57965, 68.23437], [14.577674, 68.244857], [14.57965, 68.23437]] as Coordinate[],
+      },
+      {
+        id: 'lofoten-west-road',
+        points: [
+          [14.57965, 68.23437],
+          [13.545, 68.1993],
+          [13.4308, 68.2098],
+          [13.231, 68.089],
+          [13.133, 67.945],
+          [13.0888, 67.9324],
+          [14.57965, 68.23437],
+        ] as Coordinate[],
+      },
+      {
+        id: 'lofoten-east-road',
+        points: [
+          [14.57965, 68.23437],
+          [14.481, 68.211],
+          [14.2017, 68.1537],
+          [14.114, 68.342],
+          [14.57965, 68.23437],
+        ] as Coordinate[],
+      },
+      {
+        id: 'hotel-trollfjord-port',
+        points: [[14.57965, 68.23437], [14.5682, 68.2317]] as Coordinate[],
+      },
+      {
+        id: 'port-hotel-port',
+        points: [[14.5682, 68.2317], [14.57965, 68.23437], [14.5682, 68.2317]] as Coordinate[],
+      },
     ]
 
-    Promise.all(roadRequests.map(async ({ id, from, to }) => {
+    Promise.all(roadRequests.map(async ({ id, points }) => {
       const response = await fetch(
-        `https://router.project-osrm.org/route/v1/driving/${from.join(',')};${to.join(',')}?overview=full&geometries=geojson`,
+        `https://router.project-osrm.org/route/v1/driving/${points.map((point) => point.join(',')).join(';')}?overview=full&geometries=geojson`,
         { signal: controller.signal },
       )
       if (!response.ok) throw new Error(`OSRM ${response.status}`)
@@ -373,6 +432,9 @@ export function JourneyGlobe({
     const state = getChapterState(activeChapter, chapterProgress)
     const chapter = journeyChapters[activeChapter]
     const currentSegment = chapter.segments[state.segmentIndex]
+    const hotelsForChapter = journeyHotels.filter((hotel) => hotel.chapterIds.includes(chapter.id))
+    hotelLayerRef.current?.setVisibleHotels(hotelsForChapter.map((hotel) => hotel.id))
+    setActiveHotel(hotelsForChapter[0] ?? null)
     const isInitialTakeoff = currentSegment.id === 'pek-takeoff'
     const takeoffProgress = isInitialTakeoff ? smoothstep(state.segmentProgress) : 1
     const takeoffPitchProgress = Math.min(state.segmentProgress / 0.82, 1)
@@ -439,6 +501,7 @@ export function JourneyGlobe({
         visible: false,
       })
       fallbackVehicleRef.current?.getElement().style.setProperty('display', 'none')
+      hotelLayerRef.current?.setVisibleHotels(journeyHotels.map((hotel) => hotel.id))
       setSourceLines(map, 'journey-progress', getAllRouteLines())
       map.easeTo({ center: [12.8, 64.4], zoom: 4.05, pitch: 0, bearing: 0, duration: 1300 })
     } else {
@@ -529,6 +592,12 @@ export function JourneyGlobe({
               <strong>{routeLabel}</strong>
             </div>
           </div>
+          {activeHotel && (
+            <div className="globe-hotel">
+              <span>住宿 · {activeHotel.dates}</span>
+              <strong>{activeHotel.name}</strong>
+            </div>
+          )}
           <div className="globe-coordinate">59°N — 70°N · NORD 66°</div>
         </>
       )}

@@ -91,7 +91,7 @@ export function JourneyOverview({ selectedDay, onSelectDay, onSelectPoi }: Journ
       </div>
 
       <div className="overview-hint">
-        点击日期、景点或地图标记继续探索 <ArrowRight size={14} />
+        3D 小房子表示已预订住宿 · 点击日期或景点继续探索 <ArrowRight size={14} />
       </div>
     </div>
   )
