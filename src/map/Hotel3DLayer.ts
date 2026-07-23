@@ -136,11 +136,12 @@ export class Hotel3DLayer implements CustomLayerInterface {
     if (!this.map || !this.renderer || this.visibleIds.size === 0) return
 
     const projectionMatrix = new THREE.Matrix4().fromArray(args.defaultProjectionData.mainMatrix)
-    const scale = 42000 / Math.max(1, Math.pow(2, this.map.getZoom() - 2.25))
+    const zoomDelta = Math.max(0, this.map.getZoom() - 2.25)
+    const scale = 9000 / Math.pow(2, zoomDelta * 0.82)
 
     this.hotels.forEach((hotel) => {
       if (!this.visibleIds.has(hotel.id)) return
-      const modelMatrix = this.map!.transform.getMatrixForModel(hotel.coordinates, 80)
+      const modelMatrix = this.map!.transform.getMatrixForModel(hotel.coordinates, 40)
       const localMatrix = new THREE.Matrix4()
         .fromArray(modelMatrix)
         .scale(new THREE.Vector3(scale, scale, scale))
