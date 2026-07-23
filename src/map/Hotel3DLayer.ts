@@ -63,7 +63,6 @@ const normalizeModel = (source: THREE.Group) => {
 
   const wrapper = new THREE.Group()
   wrapper.add(source)
-  wrapper.rotation.y = Math.PI / 4
   return wrapper
 }
 
