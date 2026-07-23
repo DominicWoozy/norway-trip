@@ -47,6 +47,9 @@ function App() {
             {' · '}<a href="https://poly.pizza/m/yq9EKmEmfC" target="_blank" rel="noreferrer">Cruise Ship</a>
             {' · '}<a href="https://poly.pizza/m/YDGLLT0emC" target="_blank" rel="noreferrer">Cottage</a>
           </span>
+          <span>
+            Coastal route: <a href="https://en.wikivoyage.org/wiki/Template:GPX/Hurtigruten" target="_blank" rel="noreferrer">Wikivoyage GPX · CC BY-SA 3.0</a>
+          </span>
         </small>
       </footer>
     </main>
