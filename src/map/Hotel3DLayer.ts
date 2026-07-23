@@ -8,14 +8,15 @@ import type {
 import type { JourneyHotel } from '../data/journey'
 import { assetUrl } from '../assets'
 
-const hotelColor = new THREE.Color(0x55c4c1)
-const hotelDark = new THREE.Color(0x174d5a)
+const hotelColor = new THREE.Color(0x3f7475)
+const hotelLight = new THREE.Color(0xf0e4cf)
+const hotelDark = new THREE.Color(0x183f46)
 
 const buildFallbackHouse = () => {
   const house = new THREE.Group()
   const walls = new THREE.Mesh(
     new THREE.BoxGeometry(6.6, 4.4, 5.8),
-    new THREE.MeshStandardMaterial({ color: 0xf6c2a9, roughness: 0.78 }),
+    new THREE.MeshStandardMaterial({ color: hotelLight, roughness: 0.78 }),
   )
   walls.position.y = 2.2
   const roof = new THREE.Mesh(
@@ -41,12 +42,12 @@ const normalizeModel = (source: THREE.Group) => {
       const material = sourceMaterial.clone()
       if (material instanceof THREE.MeshStandardMaterial) {
         const targetColor = material.color.getHSL({ h: 0, s: 0, l: 0 }).l > 0.48
-          ? new THREE.Color(0xf6f1e4)
+          ? hotelLight
           : hotelColor
-        material.color.lerp(targetColor, 0.55)
-        material.emissive = hotelDark.clone().multiplyScalar(0.1)
-        material.emissiveIntensity = 0.42
-        material.roughness = Math.max(material.roughness, 0.48)
+        material.color.lerp(targetColor, 0.62)
+        material.emissive = hotelDark.clone().multiplyScalar(0.04)
+        material.emissiveIntensity = 0.18
+        material.roughness = Math.max(material.roughness, 0.55)
       }
       return material
     })
@@ -62,19 +63,6 @@ const normalizeModel = (source: THREE.Group) => {
 
   const wrapper = new THREE.Group()
   wrapper.add(source)
-  const halo = new THREE.Mesh(
-    new THREE.RingGeometry(5.5, 6.5, 32),
-    new THREE.MeshBasicMaterial({
-      color: hotelColor,
-      transparent: true,
-      opacity: 0.88,
-      side: THREE.DoubleSide,
-      depthWrite: false,
-    }),
-  )
-  halo.rotation.x = -Math.PI / 2
-  halo.position.y = 0.12
-  wrapper.add(halo)
   wrapper.rotation.y = Math.PI / 4
   return wrapper
 }
@@ -128,7 +116,7 @@ export class Hotel3DLayer implements CustomLayerInterface {
     const keyLight = new THREE.DirectionalLight(0xffffff, 3.4)
     keyLight.position.set(-20, -25, 50)
     this.scene.add(keyLight)
-    const themeLight = new THREE.DirectionalLight(hotelColor, 1.8)
+    const themeLight = new THREE.DirectionalLight(0xf2c6a5, 1.1)
     themeLight.position.set(25, 12, 20)
     this.scene.add(themeLight)
 
