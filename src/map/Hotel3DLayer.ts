@@ -1,38 +1,65 @@
 import * as THREE from 'three'
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import type {
   CustomLayerInterface,
   CustomRenderMethodInput,
   Map as MapLibreMap,
 } from 'maplibre-gl'
 import type { JourneyHotel } from '../data/journey'
+import { assetUrl } from '../assets'
 
-const buildHouse = () => {
+const themeColor = new THREE.Color(0xec5b36)
+
+const buildFallbackHouse = () => {
   const house = new THREE.Group()
-  const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf6f1e4, roughness: 0.78 })
-  const roofMaterial = new THREE.MeshStandardMaterial({ color: 0xec5b36, roughness: 0.7 })
-  const trimMaterial = new THREE.MeshStandardMaterial({ color: 0x102828, roughness: 0.65 })
-  const windowMaterial = new THREE.MeshStandardMaterial({
-    color: 0xb8e1ee,
-    emissive: 0x4f8797,
-    emissiveIntensity: 0.75,
-  })
-
-  const walls = new THREE.Mesh(new THREE.BoxGeometry(6.6, 4.4, 5.8), wallMaterial)
+  const walls = new THREE.Mesh(
+    new THREE.BoxGeometry(6.6, 4.4, 5.8),
+    new THREE.MeshStandardMaterial({ color: 0xf6c2a9, roughness: 0.78 }),
+  )
   walls.position.y = 2.2
-  const roof = new THREE.Mesh(new THREE.ConeGeometry(5.1, 3.1, 4), roofMaterial)
+  const roof = new THREE.Mesh(
+    new THREE.ConeGeometry(5.1, 3.1, 4),
+    new THREE.MeshStandardMaterial({ color: 0xec5b36, roughness: 0.7 }),
+  )
   roof.position.y = 5.9
   roof.rotation.y = Math.PI / 4
-  const door = new THREE.Mesh(new THREE.BoxGeometry(1.35, 2.65, 0.24), trimMaterial)
-  door.position.set(0, 1.35, 3.02)
-
-  const leftWindow = new THREE.Mesh(new THREE.BoxGeometry(1.15, 1.15, 0.26), windowMaterial)
-  leftWindow.position.set(-2, 2.55, 3.03)
-  const rightWindow = leftWindow.clone()
-  rightWindow.position.x = 2
-
-  house.add(walls, roof, door, leftWindow, rightWindow)
-  house.rotation.y = Math.PI / 4
+  house.add(walls, roof)
   return house
+}
+
+const normalizeModel = (source: THREE.Group) => {
+  const removable: THREE.Object3D[] = []
+  source.traverse((object) => {
+    if (object instanceof THREE.Camera || object instanceof THREE.Light) removable.push(object)
+    if (!(object instanceof THREE.Mesh)) return
+    object.castShadow = false
+    object.receiveShadow = false
+
+    const sourceMaterials = Array.isArray(object.material) ? object.material : [object.material]
+    const tintedMaterials = sourceMaterials.map((sourceMaterial) => {
+      const material = sourceMaterial.clone()
+      if (material instanceof THREE.MeshStandardMaterial) {
+        material.color.lerp(themeColor, 0.42)
+        material.emissive = themeColor.clone().multiplyScalar(0.08)
+        material.emissiveIntensity = 0.35
+        material.roughness = Math.max(material.roughness, 0.48)
+      }
+      return material
+    })
+    object.material = Array.isArray(object.material) ? tintedMaterials : tintedMaterials[0]
+  })
+  removable.forEach((object) => object.parent?.remove(object))
+
+  const bounds = new THREE.Box3().setFromObject(source)
+  const center = bounds.getCenter(new THREE.Vector3())
+  const sphere = bounds.getBoundingSphere(new THREE.Sphere())
+  source.position.set(-center.x, -bounds.min.y, -center.z)
+  source.scale.multiplyScalar(5 / (sphere.radius || 1))
+
+  const wrapper = new THREE.Group()
+  wrapper.add(source)
+  wrapper.rotation.y = Math.PI / 4
+  return wrapper
 }
 
 export class Hotel3DLayer implements CustomLayerInterface {
@@ -44,9 +71,10 @@ export class Hotel3DLayer implements CustomLayerInterface {
   private renderer?: THREE.WebGLRenderer
   private camera = new THREE.Camera()
   private scene = new THREE.Scene()
-  private house = buildHouse()
+  private house = normalizeModel(buildFallbackHouse())
   private visibleIds = new Set<string>()
   private hotels: JourneyHotel[]
+  private disposed = false
 
   constructor(hotels: JourneyHotel[]) {
     this.hotels = hotels
@@ -58,12 +86,34 @@ export class Hotel3DLayer implements CustomLayerInterface {
     this.map?.triggerRepaint()
   }
 
+  private loadDetailedHouse() {
+    const loader = new GLTFLoader()
+    loader.load(
+      assetUrl('models/hotel.glb'),
+      (gltf) => {
+        if (this.disposed) return
+        const detailedHouse = normalizeModel(gltf.scene)
+        this.scene.remove(this.house)
+        this.house = detailedHouse
+        this.scene.add(this.house)
+        this.map?.triggerRepaint()
+      },
+      undefined,
+      () => {
+        // Keep the themed procedural house when the GLB cannot be loaded.
+      },
+    )
+  }
+
   onAdd(map: MapLibreMap, gl: WebGLRenderingContext | WebGL2RenderingContext) {
     this.map = map
-    this.scene.add(new THREE.HemisphereLight(0xffffff, 0x183838, 2.6))
-    const light = new THREE.DirectionalLight(0xffffff, 3)
-    light.position.set(-20, -25, 50)
-    this.scene.add(light)
+    this.scene.add(new THREE.HemisphereLight(0xffffff, 0x183838, 3))
+    const keyLight = new THREE.DirectionalLight(0xffffff, 3.4)
+    keyLight.position.set(-20, -25, 50)
+    this.scene.add(keyLight)
+    const themeLight = new THREE.DirectionalLight(0xec5b36, 1.6)
+    themeLight.position.set(25, 12, 20)
+    this.scene.add(themeLight)
 
     this.renderer = new THREE.WebGLRenderer({
       canvas: map.getCanvas(),
@@ -73,14 +123,15 @@ export class Hotel3DLayer implements CustomLayerInterface {
     this.renderer.autoClear = false
     this.renderer.outputColorSpace = THREE.SRGBColorSpace
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping
-    this.renderer.toneMappingExposure = 1.15
+    this.renderer.toneMappingExposure = 1.2
+    this.loadDetailedHouse()
   }
 
   render(_gl: WebGLRenderingContext | WebGL2RenderingContext, args: CustomRenderMethodInput) {
     if (!this.map || !this.renderer || this.visibleIds.size === 0) return
 
     const projectionMatrix = new THREE.Matrix4().fromArray(args.defaultProjectionData.mainMatrix)
-    const scale = 9000 / Math.max(1, Math.pow(2, this.map.getZoom() - 2.25))
+    const scale = 23000 / Math.max(1, Math.pow(2, this.map.getZoom() - 2.25))
 
     this.hotels.forEach((hotel) => {
       if (!this.visibleIds.has(hotel.id)) return
@@ -95,6 +146,7 @@ export class Hotel3DLayer implements CustomLayerInterface {
   }
 
   onRemove() {
+    this.disposed = true
     this.house.traverse((object) => {
       if (!(object instanceof THREE.Mesh)) return
       object.geometry.dispose()
