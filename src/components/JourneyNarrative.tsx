@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { JourneyGlobe } from '../map/JourneyGlobe'
 import { journeyChapters, type JourneyPoi } from '../data/journey'
 import { useScrollJourney } from '../hooks/useScrollJourney'
@@ -13,6 +13,17 @@ export function JourneyNarrative() {
   )
   const [overviewDay, setOverviewDay] = useState(0)
   const [selectedPoi, setSelectedPoi] = useState<JourneyPoi | null>(null)
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      journeyChapters.slice(2, 7).forEach((chapter) => {
+        const image = new Image()
+        image.decoding = 'async'
+        image.src = chapter.image
+      })
+    }, 800)
+    return () => window.clearTimeout(timer)
+  }, [])
 
   const selectOverviewDay = (index: number) => {
     setOverviewDay(index)

@@ -350,6 +350,7 @@ export function JourneyGlobe({
   }, [])
 
   useEffect(() => {
+    if (!mapReady) return
     const controller = new AbortController()
     const roadRequests = [
       {
@@ -428,7 +429,7 @@ export function JourneyGlobe({
       },
     ]
 
-    Promise.allSettled(roadRequests.map(async ({ id, points }) => {
+    const fetchRoute = async ({ id, points }: (typeof roadRequests)[number]) => {
       const response = await fetch(
         `https://router.project-osrm.org/route/v1/driving/${points.map((point) => point.join(',')).join(';')}?overview=full&geometries=geojson`,
         { signal: controller.signal },
@@ -440,8 +441,14 @@ export function JourneyGlobe({
       }
       if (data.code !== 'Ok' || !data.routes[0]) throw new Error('Route unavailable')
       return { id, path: data.routes[0].geometry.coordinates }
-    }))
-      .then((results) => {
+    }
+
+    const loadRoadRoutes = async () => {
+      for (let index = 0; index < roadRequests.length; index += 3) {
+        if (controller.signal.aborted) return
+        const results = await Promise.allSettled(
+          roadRequests.slice(index, index + 3).map(fetchRoute),
+        )
         results.forEach((result) => {
           if (result.status !== 'fulfilled') return
           const { id, path } = result.value
@@ -451,13 +458,14 @@ export function JourneyGlobe({
           })
         })
         mapRef.current?.triggerRepaint()
-      })
-      .catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === 'AbortError') return
-      })
+        await new Promise((resolve) => window.setTimeout(resolve, 100))
+      }
+    }
+
+    void loadRoadRoutes()
 
     return () => controller.abort()
-  }, [])
+  }, [mapReady])
 
   useEffect(() => {
     const map = mapRef.current
