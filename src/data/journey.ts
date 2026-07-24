@@ -2,6 +2,7 @@ import { travelLegs, tripDays, type TripDay } from '../itinerary'
 import { greatCircle, type Coordinate } from '../geo/routeMath'
 import { assetUrl } from '../assets'
 import { ROAD_ROUTES } from './roadRoutes'
+import { UPDATED_ROAD_ROUTES } from './updatedRoadRoutes'
 import {
   COASTAL_HARSTAD_TROMSO,
   COASTAL_SVOLVAER_HARSTAD,
@@ -62,15 +63,14 @@ const TROMSO_PORT: Coordinate = [18.9553, 69.6492]
 const TROMSO_HOTEL: Coordinate = [18.95198, 69.646]
 const OSLO_CENTRAL_HOTEL: Coordinate = [10.75055, 59.91058]
 const SVOLVAER_PORT: Coordinate = [14.5682, 68.2317]
-const DJEVELPORTEN_TRAILHEAD: Coordinate = [14.577674, 68.244857]
-const HAUKLAND: Coordinate = [13.545, 68.1993]
-const UTTAKLEIV: Coordinate = [13.4308, 68.2098]
+const LINKEN_TRAILHEAD: Coordinate = [14.525517, 68.233184]
 const RAMBERG: Coordinate = [13.231, 68.089]
 const HAMNOY: Coordinate = [13.133, 67.945]
 const REINE: Coordinate = [13.0888, 67.9324]
-const KABELVAG: Coordinate = [14.481, 68.211]
+const ANITAS_SJOMAT: Coordinate = [13.111263, 67.941906]
+const A_I_LOFOTEN: Coordinate = [12.9814, 67.8804]
 const HENNINGSVAER: Coordinate = [14.2017, 68.1537]
-const HOV_GIMSOY: Coordinate = [14.114, 68.342]
+const HOVEN_TRAILHEAD: Coordinate = [14.12511, 68.34001]
 
 const flight = (id: string, from: Coordinate, to: Coordinate, label: string, weight = 1): NarrativeSegment => ({
   id,
@@ -89,7 +89,7 @@ const route = (
 ): NarrativeSegment => ({
   id,
   mode,
-  path: mode === 'car' ? ROAD_ROUTES[id] ?? path : path,
+  path: mode === 'car' ? UPDATED_ROAD_ROUTES[id] ?? ROAD_ROUTES[id] ?? path : path,
   label,
   weight,
 })
@@ -145,7 +145,7 @@ export const journeyChapters: JourneyChapter[] = [
       flight('osl-boo', OSL, BOO, '奥斯陆 → 博德', 1.2),
       flight('boo-svj', BOO, SVJ, '博德 → 斯沃尔维尔', 0.8),
       route('svj-svinoya', 'car', [SVJ, SVINOYA], 'SVJ 机场 → Svinøya Rorbuer', 0.45),
-      route('svinoya-djevelporten', 'car', [SVINOYA, DJEVELPORTEN_TRAILHEAD, SVINOYA], '酒店 → Djevelporten 登山口 → 酒店', 0.35),
+      route('svinoya-linken', 'car', [SVINOYA, LINKEN_TRAILHEAD, SVINOYA], '酒店 → Linken 步道 → 酒店', 0.35),
       stay('svinoya-checkin', SVINOYA, '入住 Svinøya Rorbuer'),
     ],
   },
@@ -154,14 +154,14 @@ export const journeyChapters: JourneyChapter[] = [
     day: tripDays[3],
     image: assetUrl('guide/haukland-beach-norway.jpg'),
     eyebrow: 'E10 · WEST LOFOTEN',
-    summary: '07:30 从酒店出发，沿 E10 驶向西罗弗敦，串联海滩、渔村与 Reine，再原路返回斯沃尔维尔。',
+    summary: '09:00 从斯沃尔维尔南下，挑战 Reinebringen，在 Anita’s Sjømat 午餐后游览 Sakrisøy、Hamnøy 与 Å。',
     cameraZoom: 5.85,
     segments: [
       route(
-        'lofoten-west-road',
+        'lofoten-west-road-v2',
         'car',
-        [SVINOYA, HAUKLAND, UTTAKLEIV, RAMBERG, HAMNOY, REINE, SVINOYA],
-        'Svinøya → Haukland → Uttakleiv → Ramberg → Hamnøy → Reine → 酒店',
+        [SVINOYA, RAMBERG, REINE, ANITAS_SJOMAT, HAMNOY, A_I_LOFOTEN, SVINOYA],
+        'Svinøya → Ramberg → Reinebringen → Anita’s → Hamnøy → Å → 酒店',
       ),
       stay('svinoya-west-return', SVINOYA, '返回 Svinøya Rorbuer'),
     ],
@@ -171,14 +171,14 @@ export const journeyChapters: JourneyChapter[] = [
     day: tripDays[4],
     image: assetUrl('guide/henningsv-r.jpg'),
     eyebrow: 'HENNINGSVÆR · SVOLVÆR',
-    summary: '以较轻松的东部环线探索 Kabelvåg、Henningsvær 与 Gimsøy 海岸，把日落与极光时间留给天气。',
+    summary: '上午从 Gimsøy 的 Lofoten Links 出发徒步 Hoven，随后前往 Henningsvær 游览渔村与岩石足球场。',
     cameraZoom: 5.85,
     segments: [
       route(
-        'lofoten-east-road',
+        'lofoten-east-road-v2',
         'car',
-        [SVINOYA, KABELVAG, HENNINGSVAER, HOV_GIMSOY, SVINOYA],
-        'Svinøya → Kabelvåg → Henningsvær → Gimsøy → 酒店',
+        [SVINOYA, HOVEN_TRAILHEAD, HENNINGSVAER, SVINOYA],
+        'Svinøya → Hoven 登山口 → Henningsvær → 酒店',
       ),
       stay('svinoya-east-return', SVINOYA, '返回 Svinøya Rorbuer'),
     ],
@@ -188,7 +188,7 @@ export const journeyChapters: JourneyChapter[] = [
     day: tripDays[5],
     image: assetUrl('lofoten.jpg'),
     eyebrow: 'SVOLVÆR · VESTERÅLEN',
-    summary: '退房寄存行李后可选 Trollfjord 海鹰巡游；傍晚取行李，22:30 从斯沃尔维尔搭乘沿海邮轮北上。',
+    summary: '退房寄存行李后，从静音电动巡游或 RIB 海鹰 Safari 中二选一；傍晚购物，22:30 搭乘已预订邮轮北上。',
     cameraZoom: 5.15,
     segments: [
       route('hotel-trollfjord-port', 'car', [SVINOYA, SVOLVAER_PORT], '酒店 → Trollfjord 巡游码头', 0.25),
@@ -249,7 +249,7 @@ export const journeyChapters: JourneyChapter[] = [
     cameraZoom: 3.45,
     segments: [
       route('tromso-airport', 'car', [TROMSO_HOTEL, TOS], 'Skaret by VANDER → 特罗姆瑟机场', 0.3),
-      flight('tos-osl', TOS, OSL, '特罗姆瑟 → 奥斯陆', 1.4),
+      flight('tos-osl', TOS, OSL, 'DY381 · 12:55 特罗姆瑟 → 14:50 奥斯陆', 1.4),
       route('osl-city', 'car', [OSL, OSLO_CENTRAL_HOTEL], '奥斯陆机场 → Comfort Hotel Grand Central', 0.4),
     ],
   },
