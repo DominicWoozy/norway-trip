@@ -1,4 +1,4 @@
-import { travelLegs, tripDays, type TripDay } from '../itinerary'
+import { tripDays, type TripDay } from '../itinerary'
 import { greatCircle, type Coordinate } from '../geo/routeMath'
 import { assetUrl } from '../assets'
 import { ROAD_ROUTES } from './roadRoutes'
@@ -53,9 +53,11 @@ const VIE: Coordinate = [16.5697, 48.1103]
 const OSL: Coordinate = [11.1004, 60.1939]
 const SVG: Coordinate = [5.6378, 58.8767]
 const BOO: Coordinate = [14.3653, 67.2692]
-const SVJ: Coordinate = [14.6692, 68.2433]
 const TOS: Coordinate = [18.9189, 69.6833]
 const MUC: Coordinate = [11.7861, 48.3538]
+const BODO_FERRY: Coordinate = [14.394, 67.2883]
+const MOSKENES_FERRY: Coordinate = [13.046522, 67.900209]
+const MARGITHUSET: Coordinate = [13.096533, 67.941533]
 const STAVANGER_HOTEL: Coordinate = [5.7308, 58.96833]
 const OSLO_AIRPORT_HOTEL: Coordinate = [11.09552, 60.19237]
 const SVINOYA: Coordinate = [14.57965, 68.23437]
@@ -63,14 +65,11 @@ const TROMSO_PORT: Coordinate = [18.9553, 69.6492]
 const TROMSO_HOTEL: Coordinate = [18.95198, 69.646]
 const OSLO_CENTRAL_HOTEL: Coordinate = [10.75055, 59.91058]
 const SVOLVAER_PORT: Coordinate = [14.5682, 68.2317]
-const LINKEN_TRAILHEAD: Coordinate = [14.525517, 68.233184]
-const RAMBERG: Coordinate = [13.231, 68.089]
-const HAMNOY: Coordinate = [13.133, 67.945]
 const REINE: Coordinate = [13.0888, 67.9324]
 const ANITAS_SJOMAT: Coordinate = [13.111263, 67.941906]
 const A_I_LOFOTEN: Coordinate = [12.9814, 67.8804]
 const HENNINGSVAER: Coordinate = [14.2017, 68.1537]
-const HOVEN_TRAILHEAD: Coordinate = [14.12511, 68.34001]
+const BODO_MOSKENES_FERRY = greatCircle(BODO_FERRY, MOSKENES_FERRY, 48)
 
 const flight = (id: string, from: Coordinate, to: Coordinate, label: string, weight = 1): NarrativeSegment => ({
   id,
@@ -126,7 +125,7 @@ export const journeyChapters: JourneyChapter[] = [
     summary: '穿过 Ryfast 海底隧道，沿 Ryfylke 前往布道石，在吕瑟峡湾之上完成经典徒步。',
     cameraZoom: 5.75,
     segments: [
-      route('stavanger-pulpit', 'car', travelLegs[0], '斯塔万格 → 布道石', 1.2),
+      route('stavanger-pulpit', 'car', [STAVANGER_HOTEL, [6.1904, 58.9864]], '斯塔万格 → 布道石', 1.2),
       route('pulpit-svg', 'car', [tripDays[1].coordinates, SVG], '布道石 → 斯塔万格机场', 0.9),
       flight('svg-osl', SVG, OSL, '斯塔万格 → 奥斯陆', 0.7),
       route('osl-airport-hotel', 'car', [OSL, OSLO_AIRPORT_HOTEL], '奥斯陆机场 → 机场酒店', 0.2),
@@ -137,50 +136,58 @@ export const journeyChapters: JourneyChapter[] = [
     id: 'fly-lofoten',
     day: tripDays[2],
     image: assetUrl('guide/reine-norway.jpg'),
-    eyebrow: 'OSL · BOO · SVJ',
-    summary: '09:00 从奥斯陆出发，经博德换乘螺旋桨支线，13:10 抵达斯沃尔维尔并入住 Svinøya Rorbuer。',
+    eyebrow: 'OSL · BOO · MOSKENES',
+    summary: '09:00 从奥斯陆飞抵博德，打车前往渡轮码头，13:00 横渡 Vestfjorden，16:15 抵达 Moskenes 后入住 Reine。',
     cameraZoom: 3.45,
     segments: [
       route('hotel-osl-airport', 'car', [OSLO_AIRPORT_HOTEL, OSL], '机场酒店 → OSL 航站楼', 0.2),
       flight('osl-boo', OSL, BOO, '奥斯陆 → 博德', 1.2),
-      flight('boo-svj', BOO, SVJ, '博德 → 斯沃尔维尔', 0.8),
-      route('svj-svinoya', 'car', [SVJ, SVINOYA], 'SVJ 机场 → Svinøya Rorbuer', 0.45),
-      route('svinoya-linken', 'car', [SVINOYA, LINKEN_TRAILHEAD, SVINOYA], '酒店 → Linken 步道 → 酒店', 0.35),
-      stay('svinoya-checkin', SVINOYA, '入住 Svinøya Rorbuer'),
+      route('boo-ferry', 'car', [BOO, BODO_FERRY], '博德机场 → 博德渡轮码头', 0.25),
+      route('bodo-moskenes-ferry', 'ship', BODO_MOSKENES_FERRY, 'Torghatten Nord · 博德 → Moskenes', 1.1),
+      route('moskenes-margithuset', 'car', [MOSKENES_FERRY, MARGITHUSET], 'Moskenes 码头 → Margithuset', 0.25),
+      stay('margithuset-checkin', MARGITHUSET, '入住 Margithuset'),
     ],
   },
   {
     id: 'lofoten-west',
     day: tripDays[3],
-    image: assetUrl('guide/haukland-beach-norway.jpg'),
-    eyebrow: 'E10 · WEST LOFOTEN',
-    summary: '09:00 从斯沃尔维尔南下，挑战 Reinebringen，在 Anita’s Sjømat 午餐后游览 Sakrisøy、Hamnøy 与 Å。',
+    image: assetUrl('guide/reine-norway.jpg'),
+    eyebrow: 'Å · SAKRISØY · REINE',
+    summary: '继续住在 Reine 南部，以公交或出租车串联 Å、Sakrisøy 与 Reinebringen；天气不佳时改去 Ramberg 海滩。',
     cameraZoom: 5.85,
     segments: [
       route(
-        'lofoten-west-road-v2',
+        'reine-local-loop',
         'car',
-        [SVINOYA, RAMBERG, REINE, ANITAS_SJOMAT, HAMNOY, A_I_LOFOTEN, SVINOYA],
-        'Svinøya → Ramberg → Reinebringen → Anita’s → Hamnøy → Å → 酒店',
+        [MARGITHUSET, A_I_LOFOTEN, ANITAS_SJOMAT, REINE, MARGITHUSET],
+        'Margithuset → Å → Anita’s Sjømat → Reinebringen → 酒店',
       ),
-      stay('svinoya-west-return', SVINOYA, '返回 Svinøya Rorbuer'),
+      stay('margithuset-second-night', MARGITHUSET, '继续入住 Margithuset'),
     ],
   },
   {
     id: 'lofoten-east',
     day: tripDays[4],
     image: assetUrl('guide/henningsv-r.jpg'),
-    eyebrow: 'HENNINGSVÆR · SVOLVÆR',
-    summary: '上午从 Gimsøy 的 Lofoten Links 出发徒步 Hoven，随后前往 Henningsvær 游览渔村与岩石足球场。',
+    eyebrow: 'REINE · SVOLVÆR · HENNINGSVÆR',
+    summary: '11:00 退房后搭乘300路穿越E10，约14:30入住Svinøya；下午换乘743路游览Henningsvær。',
     cameraZoom: 5.85,
     segments: [
       route(
-        'lofoten-east-road-v2',
+        'margithuset-svinoya-bus',
         'car',
-        [SVINOYA, HOVEN_TRAILHEAD, HENNINGSVAER, SVINOYA],
-        'Svinøya → Hoven 登山口 → Henningsvær → 酒店',
+        [MARGITHUSET, SVINOYA],
+        '300路 · Reine → Leknes → Svolvær',
       ),
-      stay('svinoya-east-return', SVINOYA, '返回 Svinøya Rorbuer'),
+      stay('svinoya-checkin', SVINOYA, '15:00 入住 Svinøya Rorbuer'),
+      route(
+        'svinoya-henningsvaer-bus',
+        'car',
+        [SVINOYA, HENNINGSVAER, SVINOYA],
+        '743路 · Svolvær ↔ Henningsvær',
+        0.55,
+      ),
+      stay('svinoya-night', SVINOYA, '返回 Svinøya Rorbuer'),
     ],
   },
   {
@@ -286,12 +293,20 @@ export const journeyHotels: JourneyHotel[] = [
     chapterIds: ['pulpit-rock', 'fly-lofoten'],
   },
   {
+    id: 'margithuset',
+    name: 'Margithuset',
+    city: 'Reine',
+    coordinates: MARGITHUSET,
+    dates: '09.27–09.29 · 2晚',
+    chapterIds: ['fly-lofoten', 'lofoten-west'],
+  },
+  {
     id: 'svinoya-rorbuer',
     name: 'Svinøya Rorbuer',
     city: '斯沃尔维尔',
     coordinates: SVINOYA,
-    dates: '09.27–09.30 · 3晚',
-    chapterIds: ['fly-lofoten', 'lofoten-west', 'lofoten-east', 'coastal-night'],
+    dates: '09.29–09.30 · 1晚',
+    chapterIds: ['lofoten-east', 'coastal-night'],
   },
   {
     id: 'skaret-vander',

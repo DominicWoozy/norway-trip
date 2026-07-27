@@ -54,18 +54,19 @@ export const tripDays: TripDay[] = [
     id: 3,
     date: '09.27',
     weekday: '周日',
-    place: '斯沃尔维尔',
-    title: '飞入罗弗敦',
-    subtitle: '奥斯陆 · 博德 · 斯沃尔维尔',
-    coordinates: [14.57965, 68.23437],
+    place: 'Reine',
+    title: '飞越峡湾，渡海进入罗弗敦',
+    subtitle: '奥斯陆 · 博德 · Moskenes · Reine',
+    coordinates: [13.096533, 67.941533],
     mapZoom: 10,
     transport: [
-      'DY340 · 09:00 奥斯陆 → 10:30 博德 · 待订',
-      'WF826 · 12:45 博德 → 13:10 斯沃尔维尔 · 待订 / 行李非直达',
+      'DY340 · 09:00 奥斯陆 → 10:30 博德',
+      '出租车 · 博德机场 → 博德渡轮码头 · 约10分钟',
+      'Torghatten Nord · 13:00 博德 → 16:15 Moskenes · 已预订',
     ],
-    stay: 'Svinøya Rorbuer · 2间 Rorbu M2 · 已预订至 9/30',
-    activities: ['13:10 抵达 SVJ，提取行李后取车', '前往 Svinøya Rorbuer，15:00 入住', '下午 Linken 步道徒步，俯瞰斯沃尔维尔与海港', '晚上返回酒店看极光'],
-    tags: ['北极圈', '飞行'],
+    stay: 'Margithuset · Reine · 已预订至 9/29',
+    activities: ['10:30 抵达博德后打车前往渡轮码头', '最晚12:15到达预订通道', '13:00乘渡轮横渡Vestfjorden', '16:15抵达Moskenes后前往Margithuset'],
+    tags: ['北极圈', '飞行', '渡轮'],
   },
   {
     id: 4,
@@ -73,26 +74,26 @@ export const tripDays: TripDay[] = [
     weekday: '周一',
     place: '西罗弗敦',
     title: '驶向群岛尽头',
-    subtitle: 'Ramberg · Reinebringen · Sakrisøy · Hamnøy · Å',
-    coordinates: [13.0888, 67.9324],
+    subtitle: 'Å · Sakrisøy · Reinebringen',
+    coordinates: [13.096533, 67.941533],
     mapZoom: 10,
-    transport: ['包车或一日团 · E10 南线往返'],
-    stay: 'Svinøya Rorbuer · 已预订',
-    activities: ['09:00–11:00 经 E10 与 Ramberg 前往 Reine', '11:00–13:30 Reinebringen 徒步', '13:30–14:30 Anita’s Sjømat 海鲜汉堡', '14:30–16:30 Sakrisøy、Hamnøy 与 Å', '16:30–18:30 返回斯沃尔维尔'],
+    transport: ['公交300/742或Reine Taxi · 南部短途往返'],
+    stay: 'Margithuset · 已预订',
+    activities: ['08:30–09:00 从Margithuset出发', 'Å渔村与Sakrisøy黄木屋', 'Anita’s Sjømat海鲜汉堡', 'Reinebringen阶梯徒步', '雨雪结冰则改去Ramberg白沙滩'],
     tags: ['公路', '摄影'],
   },
   {
     id: 5,
     date: '09.29',
     weekday: '周二',
-    place: '东罗弗敦',
-    title: '渔村、海桥与北方海岸',
-    subtitle: 'Hoven · Gimsøy · Henningsvær',
-    coordinates: [14.2017, 68.1537],
+    place: 'Reine → Svolvær',
+    title: '沿E10穿越群岛',
+    subtitle: '300路 · Svinøya · Henningsvær',
+    coordinates: [14.57965, 68.23437],
     mapZoom: 10,
-    transport: ['自驾或包车 · Svinøya → Hoven → Henningsvær'],
+    transport: ['约11:45 公交300路 Reine → Svolvær；下午公交743路往返Henningsvær'],
     stay: 'Svinøya Rorbuer · 已预订',
-    activities: ['上午 Hoven 徒步，往返约2–2.5小时', '中午前往 Henningsvær', '下午游览渔村与岩石足球场', '晚上返回酒店看极光'],
+    activities: ['11:00退房并前往公交站', '乘300路穿越E10，约14:30入住Svinøya', '下午乘743路游览Henningsvær', '渔村、岩石足球场与Festvågtind视角', '晚上返回酒店看极光'],
     tags: ['自由行', '极光'],
   },
   {
@@ -183,55 +184,3 @@ export const tripDays: TripDay[] = [
   },
 ]
 
-// Each entry is the visible map path from one itinerary day to the next.
-// Intermediate stops keep the animation on the same route drawn on the map.
-export const travelLegs: [number, number][][] = [
-  [[5.7331, 58.969], [6.1904, 58.9864]],
-  [
-    [6.1904, 58.9864],
-    [5.6378, 58.8767], // Stavanger Airport (SVG)
-    [11.1004, 60.1939], // Oslo Airport (OSL)
-    [14.3653, 67.2692], // Bodø Airport (BOO)
-    [13.6094, 68.1525], // Leknes Airport (LKN)
-    [13.6506, 68.2088],
-  ],
-  [[13.6506, 68.2088], [13.1784, 68.0892]],
-  [[13.1784, 68.0892], [14.472, 68.234]],
-  [
-    [14.472, 68.234],
-    [14.5682, 68.2317], // Svolvær
-    [14.9128, 68.5646], // Stokmarknes
-    [15.4138, 68.6957], // Sortland
-    [15.9684, 68.9693], // Risøyhamn
-    [16.5415, 68.7988], // Harstad
-  ],
-  [
-    [16.5415, 68.7988],
-    [17.9817, 69.2291], // Finnsnes
-    [18.9553, 69.6492], // Tromsø
-  ],
-  [[18.9553, 69.6492], [18.9553, 69.6492]],
-  [[18.9553, 69.6492], [18.9553, 69.6492]],
-  [
-    [18.9553, 69.6492],
-    [18.9189, 69.6833], // Tromsø Airport (TOS)
-    [11.1004, 60.1939], // Oslo Airport (OSL)
-    [10.7522, 59.9139],
-  ],
-  [[10.7522, 59.9139], [10.7522, 59.9139]],
-]
-
-export const transportStops = [
-  { code: 'SVG', name: '斯塔万格机场', mode: 'airport', coordinates: [5.6378, 58.8767] as [number, number] },
-  { code: 'OSL', name: '奥斯陆机场', mode: 'airport', coordinates: [11.1004, 60.1939] as [number, number] },
-  { code: 'BOO', name: '博德机场', mode: 'airport', coordinates: [14.3653, 67.2692] as [number, number] },
-  { code: 'LKN', name: '莱克内斯机场', mode: 'airport', coordinates: [13.6094, 68.1525] as [number, number] },
-  { code: 'TOS', name: '特罗姆瑟机场', mode: 'airport', coordinates: [18.9189, 69.6833] as [number, number] },
-  { code: 'SVJ', name: '斯沃尔维尔港', mode: 'port', coordinates: [14.5682, 68.2317] as [number, number] },
-  { code: 'SKN', name: '斯托克马克内斯', mode: 'port', coordinates: [14.9128, 68.5646] as [number, number] },
-  { code: 'SRD', name: '索特兰', mode: 'port', coordinates: [15.4138, 68.6957] as [number, number] },
-  { code: 'RIN', name: '里瑟港', mode: 'port', coordinates: [15.9684, 68.9693] as [number, number] },
-  { code: 'HRD', name: '哈尔斯塔', mode: 'port', coordinates: [16.5415, 68.7988] as [number, number] },
-  { code: 'FNS', name: '芬斯内斯', mode: 'port', coordinates: [17.9817, 69.2291] as [number, number] },
-  { code: 'TOS', name: '特罗姆瑟', mode: 'port', coordinates: [18.9553, 69.6492] as [number, number] },
-]
